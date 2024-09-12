@@ -21,7 +21,7 @@ public class ChessBoard {
      * @param piece    the piece to add
      */
     public void addPiece(ChessPosition position, ChessPiece piece) {
-        squares[position.getRow()][position.getColumn()] = piece;
+        squares[position.getRow()-1][position.getColumn()-1] = piece;
     }
 
     /**
@@ -32,10 +32,8 @@ public class ChessBoard {
      * position
      */
     public ChessPiece getPiece(ChessPosition position) {
-        if (squares[position.getRow()][position.getColumn()] != null) {
-            return squares[position.getRow()][position.getColumn()]; //im not sure if that is returning the chess piece.
-        }
-        return null;
+        return squares[position.getRow()-1][position.getColumn()-1]; //im not sure if that is returning the chess piece.
+
     }
 
     /**
@@ -44,5 +42,6 @@ public class ChessBoard {
      */
     public void resetBoard() {
         squares = new ChessPiece[8][8];
+        squares[0][0] = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.ROOK);
     }
 }
