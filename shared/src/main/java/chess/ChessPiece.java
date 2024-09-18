@@ -1,6 +1,8 @@
 package chess;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Objects;
 
 /**
  * Represents a single chess piece
@@ -52,6 +54,159 @@ public class ChessPiece {
      * @return Collection of valid moves
      */
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
-        throw new RuntimeException("Not implemented");
+
+
+        ChessPiece myPiece = board.getPiece(myPosition);
+        PieceType myType = myPiece.getPieceType();
+        ChessGame.TeamColor myColor = myPiece.getTeamColor();
+
+        Collection<ChessMove> possibles = new ArrayList<>();
+
+        if (myType == PieceType.BISHOP) {
+            int[][] directions = {{-1, 1}, {1, -1}, {-1, -1}, {1, 1}};
+            for (int[] direction : directions) {
+                int addRow = direction[0]; //accesses the first number in the tuple(row)
+                int addCol = direction[1]; //accesses the second number in the tuple(col)
+                ChessPosition newPosition = myPosition;
+                while (true) {
+                    newPosition = newPosition.adjust(addRow, addCol);
+                    if (newPosition.getRow() < 1 || newPosition.getRow() > 8
+                            || newPosition.getColumn() < 1 || newPosition.getColumn() > 8) {
+                        break;
+                    }
+                    ChessPiece pieceAtPosition = board.getPiece(newPosition);
+                    if (pieceAtPosition == null) {
+                        possibles.add(new ChessMove(myPosition, newPosition, null));
+                    }
+                    else {
+                        ChessGame.TeamColor theirColor = pieceAtPosition.getTeamColor();
+                        if(theirColor != myColor) { //if it's an opponent
+                            possibles.add(new ChessMove(myPosition, newPosition, null));
+                        }
+                        break;
+                    }
+                }
+            }
+        }
+        if (myType == PieceType.ROOK){
+            int[][] directions = {{1,0}, {0,1}, {-1,0}, {0,-1}};
+            for (int[] direction : directions) {
+                int addRow = direction[0]; //accesses the first number in the tuple(row)
+                int addCol = direction[1]; //accesses the second number in the tuple(col)
+                ChessPosition newPosition = myPosition;
+                while (true) {
+                    newPosition = newPosition.adjust(addRow, addCol);
+                    if (newPosition.getRow() < 1 || newPosition.getRow() > 8
+                            || newPosition.getColumn() < 1 || newPosition.getColumn() > 8) {
+                        break;
+                    }
+                    ChessPiece pieceAtPosition = board.getPiece(newPosition);
+                    if (pieceAtPosition == null) {
+                        possibles.add(new ChessMove(myPosition, newPosition, null));
+                    }
+                    else {
+                        ChessGame.TeamColor theirColor = pieceAtPosition.getTeamColor();
+                        if(theirColor != myColor) { //if it's an opponent
+                            possibles.add(new ChessMove(myPosition, newPosition, null));
+                        }
+                        break;
+                    }
+                }
+            }
+        }
+        if (myType == PieceType.QUEEN) {
+            int[][] directions = {{1,0}, {0,1}, {-1,0}, {0,-1}, {1,-1}, {1,1}, {-1,1}, {-1,-1}};
+            for (int[] direction : directions) {
+                int addRow = direction[0]; //accesses the first number in the tuple(row)
+                int addCol = direction[1]; //accesses the second number in the tuple(col)
+                ChessPosition newPosition = myPosition;
+                while (true) {
+                    newPosition = newPosition.adjust(addRow, addCol);
+                    if (newPosition.getRow() < 1 || newPosition.getRow() > 8
+                            || newPosition.getColumn() < 1 || newPosition.getColumn() > 8) {
+                        break;
+                    }
+                    ChessPiece pieceAtPosition = board.getPiece(newPosition);
+                    if (pieceAtPosition == null) {
+                        possibles.add(new ChessMove(myPosition, newPosition, null));
+                    }
+                    else {
+                        ChessGame.TeamColor theirColor = pieceAtPosition.getTeamColor();
+                        if(theirColor != myColor) { //if it's an opponent
+                            possibles.add(new ChessMove(myPosition, newPosition, null));
+                        }
+                        break;
+                    }
+                }
+            }
+        }
+        if (myType == PieceType.KING) {
+            int[][] directions = {{1,0}, {0,1}, {-1,0}, {0,-1}, {1,-1}, {1,1}, {-1,1}, {-1,-1}};
+            for (int[] direction : directions) {
+                int addRow = direction[0]; //accesses the first number in the tuple(row)
+                int addCol = direction[1]; //accesses the second number in the tuple(col)
+                ChessPosition newPosition = myPosition.adjust(addRow, addCol);
+                if (newPosition.getRow() < 1 || newPosition.getRow() > 8
+                        || newPosition.getColumn() < 1 || newPosition.getColumn() > 8) {
+                    continue;
+                }
+                ChessPiece pieceAtPosition = board.getPiece(newPosition);
+                if (pieceAtPosition == null) {
+                    possibles.add(new ChessMove(myPosition, newPosition, null));
+                }
+                else {
+                    ChessGame.TeamColor theirColor = pieceAtPosition.getTeamColor();
+                    if(theirColor != myColor) { //if it's an opponent
+                        possibles.add(new ChessMove(myPosition, newPosition, null));
+                    }
+                }
+            }
+        }
+        if (myType == PieceType.KNIGHT) {
+            int[][] directions = {{1,2}, {1,-2}, {2,1}, {2,-1}, {-1,2}, {-1,-2}, {-2, -1}, {-2, 1}};
+            for (int[] direction : directions) {
+                int addRow = direction[0]; //accesses the first number in the tuple(row)
+                int addCol = direction[1]; //accesses the second number in the tuple(col)
+                ChessPosition newPosition = myPosition.adjust(addRow, addCol);
+                if (newPosition.getRow() < 1 || newPosition.getRow() > 8
+                        || newPosition.getColumn() < 1 || newPosition.getColumn() > 8) {
+                    continue;
+                }
+                ChessPiece pieceAtPosition = board.getPiece(newPosition);
+                if (pieceAtPosition == null) {
+                    possibles.add(new ChessMove(myPosition, newPosition, null));
+                }
+                else {
+                    ChessGame.TeamColor theirColor = pieceAtPosition.getTeamColor();
+                    if(theirColor != myColor) { //if it's an opponent
+                        possibles.add(new ChessMove(myPosition, newPosition, null));
+                    }
+                }
+            }
+        }
+//
+
+//
+//        if (myType == PieceType.PAWN) {
+//
+//        }
+        return possibles;
+
+
+
+
+
+    }
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ChessPiece that = (ChessPiece) o;
+        return pieceColor == that.pieceColor && type == that.type;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(pieceColor, type);
     }
 }
