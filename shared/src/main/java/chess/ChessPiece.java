@@ -200,11 +200,11 @@ public class ChessPiece {
                 int addRow = direction[0]; //accesses the first number in the tuple(row)
                 int addCol = direction[1];
                 ChessPosition newPosition = myPosition.adjust(addRow, addCol);
-                ChessPiece pieceAtPosition = board.getPiece(newPosition);
                 if (newPosition.getRow() < 1 || newPosition.getRow() > 8
                         || newPosition.getColumn() < 1 || newPosition.getColumn() > 8) {
                     continue;
                 }
+                ChessPiece pieceAtPosition = board.getPiece(newPosition);
                 if (newPosition.getColumn() == myPosition.getColumn()) { //if there is no piece in front you can move.
                     if (pieceAtPosition == null) {
                         if(myColor == ChessGame.TeamColor.WHITE && myPosition.getRow() == 7) {
