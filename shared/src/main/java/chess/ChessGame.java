@@ -1,6 +1,9 @@
 package chess;
 
+
+import java.util.ArrayList;
 import java.util.Collection;
+
 
 /**
  * For a class that can manage a chess game, making moves on a board
@@ -9,17 +12,17 @@ import java.util.Collection;
  * signature of the existing methods.
  */
 public class ChessGame {
+    private TeamColor team;
+    private ChessBoard chessBoard;
 
     public ChessGame() {
-
     }
 
     /**
      * @return Which team's turn it is
      */
     public TeamColor getTeamTurn() {
-
-        throw new RuntimeException("Not implemented");
+        return this.team;
     }
 
     /**
@@ -28,8 +31,8 @@ public class ChessGame {
      * @param team the team whose turn it is
      */
     public void setTeamTurn(TeamColor team) {
+        this.team = team;
 
-        throw new RuntimeException("Not implemented");
     }
 
     /**
@@ -48,7 +51,21 @@ public class ChessGame {
      * startPosition
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
-        throw new RuntimeException("Not implemented");
+        Collection<ChessMove> validMoves = new ArrayList<>();
+        if (chessBoard.getPiece(startPosition) == null){
+            return null;
+        }
+        else{
+            ChessPiece current_piece = chessBoard.getPiece(startPosition);
+            TeamColor myColor = current_piece.getTeamColor();
+            Collection<ChessMove> possibleList = current_piece.pieceMoves(chessBoard, startPosition);
+            for(ChessMove possibles : possibleList){
+                if(!isInCheck(myColor)){
+                    validMoves.add(possibles);
+                }
+            }
+        }
+        return validMoves;
     }
 
     /**
@@ -68,8 +85,30 @@ public class ChessGame {
      * @return True if the specified team is in check
      */
     public boolean isInCheck(TeamColor teamColor) {
-
-        throw new RuntimeException("Not implemented");
+        ChessPosition kingPosition = null; //checking where my kings position
+        for(int i = 1; i < 8; i++){
+            for(int j = 1; j < 8; j++){
+                ChessPosition pos = new ChessPosition(i, j);
+                if(chessBoard.getPiece(pos).getPieceType() == ChessPiece.PieceType.KING && chessBoard.getPiece(pos).getTeamColor() == teamColor){
+                    kingPosition = pos;
+                }
+            }
+        }
+        for(int i = 1; i < 8; i++){ //checking the opponents valid moves
+            for(int j = 1; j < 8; j++){
+                ChessPosition otherPos = new ChessPosition(i, j);
+                ChessPiece otherPiece = chessBoard.getPiece(otherPos);
+                if(otherPiece.getTeamColor() != teamColor){
+                    Collection<ChessMove> opponentList = otherPiece.pieceMoves(chessBoard, otherPos);
+                    for(ChessMove moves: opponentList){
+                        if(moves.getEndPosition() == kingPosition){
+                            return false;
+                        }
+                    }
+                }
+            }
+        }
+        return true;
     }
 
     /**
@@ -101,8 +140,8 @@ public class ChessGame {
      * @param board the new board to use
      */
     public void setBoard(ChessBoard board) {
+        this.chessBoard = board;
 
-        throw new RuntimeException("Not implemented");
     }
 
     /**
@@ -111,6 +150,6 @@ public class ChessGame {
      * @return the chessboard
      */
     public ChessBoard getBoard() {
-        throw new RuntimeException("Not implemented");
+        return this.chessBoard;
     }
 }
