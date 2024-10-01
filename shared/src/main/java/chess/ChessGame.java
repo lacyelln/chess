@@ -3,6 +3,7 @@ package chess;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Objects;
 
 
 /**
@@ -60,9 +61,17 @@ public class ChessGame {
             TeamColor myColor = current_piece.getTeamColor();
             Collection<ChessMove> possibleList = current_piece.pieceMoves(chessBoard, startPosition);
             for(ChessMove possibles : possibleList){
+                ChessPiece endPiece = null;
+                if(chessBoard.getPiece(possibles.getEndPosition())!= null){
+                    endPiece = chessBoard.getPiece(possibles.getEndPosition());
+                }
+                chessBoard.addPiece(startPosition, null);
+                chessBoard.addPiece(possibles.getEndPosition(), current_piece);
                 if(!isInCheck(myColor)){
                     validMoves.add(possibles);
                 }
+                chessBoard.addPiece(startPosition, current_piece);
+                chessBoard.addPiece(possibles.getEndPosition(), endPiece);
             }
         }
         return validMoves;
@@ -86,29 +95,34 @@ public class ChessGame {
      */
     public boolean isInCheck(TeamColor teamColor) {
         ChessPosition kingPosition = null; //checking where my kings position
-        for(int i = 1; i < 8; i++){
-            for(int j = 1; j < 8; j++){
+        for(int i = 1; i <= 8; i++){
+            for(int j = 1; j <= 8; j++){
                 ChessPosition pos = new ChessPosition(i, j);
-                if(chessBoard.getPiece(pos).getPieceType() == ChessPiece.PieceType.KING && chessBoard.getPiece(pos).getTeamColor() == teamColor){
-                    kingPosition = pos;
+                if(chessBoard.getPiece(pos) != null) {
+                    if (chessBoard.getPiece(pos).getPieceType() == ChessPiece.PieceType.KING && chessBoard.getPiece(pos).getTeamColor() == teamColor) {
+                        kingPosition = pos;
+                    }
                 }
             }
         }
-        for(int i = 1; i < 8; i++){ //checking the opponents valid moves
-            for(int j = 1; j < 8; j++){
+
+        for(int i = 1; i <= 8; i++){ //checking the opponents valid moves
+            for(int j = 1; j <= 8; j++){
                 ChessPosition otherPos = new ChessPosition(i, j);
                 ChessPiece otherPiece = chessBoard.getPiece(otherPos);
-                if(otherPiece.getTeamColor() != teamColor){
-                    Collection<ChessMove> opponentList = otherPiece.pieceMoves(chessBoard, otherPos);
-                    for(ChessMove moves: opponentList){
-                        if(moves.getEndPosition() == kingPosition){
-                            return false;
+                if(otherPiece != null){
+                    if(otherPiece.getTeamColor() != teamColor){
+                        Collection<ChessMove> opponentList = otherPiece.pieceMoves(chessBoard, otherPos);
+                        for(ChessMove moves: opponentList){
+                            if(moves.getEndPosition().equals(kingPosition)){
+                                return true;
+                            }
                         }
                     }
                 }
             }
         }
-        return true;
+        return false;
     }
 
     /**
