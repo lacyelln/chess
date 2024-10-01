@@ -220,7 +220,7 @@ public class ChessPiece {
                         }
                         else {possibles.add(new ChessMove(myPosition, newPosition, null ));}
                     }
-                    else if (addCol == 0){
+                    else {
                         break;
                     }
                 }
