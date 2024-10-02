@@ -17,6 +17,11 @@ public class ChessPosition {
         this.col = col;
     }
 
+    public ChessPosition(ChessPosition pos) {
+        this.row = pos.row;
+        this.col = pos.col;
+    }
+
     public ChessPosition adjust(int addRow, int addCol){
         int newRow = this.row + addRow;
         int newCol = this.col + addCol;
