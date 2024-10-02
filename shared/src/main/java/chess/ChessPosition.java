@@ -28,6 +28,11 @@ public class ChessPosition {
         return new ChessPosition(newRow, newCol);
     }
 
+    public boolean inBounds(ChessPosition position){
+        return position.getRow() > 1 && position.getRow() < 8
+                && position.getColumn() > 1 && position.getColumn() < 8;
+    }
+
     /**
      * @return which row this position is in
      * 1 codes for the bottom row
