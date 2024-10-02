@@ -13,6 +13,7 @@ import java.util.Objects;
 public class ChessPiece {
     private final ChessGame.TeamColor pieceColor;
     private final PieceType type;
+    private boolean hasMoved;
 
 
     public ChessPiece(ChessGame.TeamColor pieceColor, ChessPiece.PieceType type) {
@@ -268,5 +269,12 @@ public class ChessPiece {
         return Objects.hash(pieceColor, type);
     }
 
-
+    @Override
+    public String toString() {
+        return "ChessPiece{" +
+                "pieceColor=" + pieceColor +
+                ", type=" + type +
+                ", hasMoved=" + hasMoved +
+                '}';
+    }
 }
