@@ -36,8 +36,8 @@ public class ChessBoard {
      */
     public ChessPiece getPiece(ChessPosition position) {
         return squares[position.getRow()-1][position.getColumn()-1];
-
     }
+
 
     /**
      * Sets the board to the default starting board
@@ -92,5 +92,23 @@ public class ChessBoard {
     @Override
     public int hashCode() {
         return Arrays.deepHashCode(squares);
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder string = new StringBuilder();
+        for(int i = 0; i < 8; i++){
+            for(int j= 0; j< 8; j++){
+                if(squares[i][j] != null){
+                    string.append(squares[i][j].getPieceType());
+                }
+                else{
+                    string.append("null");
+                }
+            }
+            string.append("\n");
+        }
+        return string.toString();
+
     }
 }
