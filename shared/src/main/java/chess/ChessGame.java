@@ -69,7 +69,7 @@ public class ChessGame {
                 if(chessBoard.getPiece(possibles.getEndPosition())!= null){
                     endPiece = chessBoard.getPiece(possibles.getEndPosition());
                 }
-                chessBoard.addPiece(startPosition, null);
+                chessBoard.removePiece(startPosition);
                 chessBoard.addPiece(possibles.getEndPosition(), current_piece);
                 if(!isInCheck(myColor)){
                     validMoves.add(possibles);
