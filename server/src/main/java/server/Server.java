@@ -3,6 +3,7 @@ import Service.UserService;
 import Service.GameService;
 import com.google.gson.Gson;
 import dataaccess.*;
+import model.AuthData;
 import model.UserData;
 import spark.*;
 
@@ -22,7 +23,7 @@ public class Server {
         Spark.staticFiles.location("web");
         Spark.post("/user", this::register);
         Spark.delete("/db", this::delete);
-//        Spark.post("/session", userService.login);
+        Spark.post("/session", this::login);
 //        Spark.delete("/session", userService.logout);
 //        Spark.get("/game", gameService.listGames);
 //        Spark.post("/game", gameService.createGame);
@@ -50,7 +51,14 @@ public class Server {
     }
 
     public Object delete(Request req, Response res) throws DataAccessException {
+        gameService.delete();
         return serializer.toJson(new HashMap<>());
+    }
+
+    public Object login(Request req, Response res) throws DataAccessException {
+        UserData user = new Gson().fromJson(req.body(), UserData.class);
+        var authData = userService.login(user);
+        return serializer.toJson(authData);
     }
 
 }

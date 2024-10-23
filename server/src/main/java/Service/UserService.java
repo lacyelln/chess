@@ -27,7 +27,7 @@ public class UserService {
     }
     public AuthData login(UserData user) throws DataAccessException {
         if(uData.getUser(user) == null){
-            throw new DataAccessException("Error: already taken");
+            throw new DataAccessException("Error: unauthorized");
         }
         return aData.createAuth(user);
     }
