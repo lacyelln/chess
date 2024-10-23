@@ -13,7 +13,7 @@ public class Server {
     private final MemoryAuthDAO authDAO = new MemoryAuthDAO();
     private final MemoryGameDAO gameDAO = new MemoryGameDAO();
     private final MemoryUserDAO userDAO = new MemoryUserDAO();
-    private final GameService gameService = new GameService(authDAO, gameDAO, userDAO);
+    private final GameService gameService = new GameService(authDAO, gameDAO);
     private final UserService userService = new UserService(userDAO, authDAO);
     private final Gson serializer = new Gson();
 
@@ -24,10 +24,10 @@ public class Server {
         Spark.post("/user", this::register);
         Spark.delete("/db", this::delete);
         Spark.post("/session", this::login);
-//        Spark.delete("/session", userService.logout);
-//        Spark.get("/game", gameService.listGames);
-//        Spark.post("/game", gameService.createGame);
-//        Spark.put("/game", gameService.joinGame);
+        Spark.delete("/session", this::logout);
+//        Spark.get("/game", this::listGames);
+//        Spark.post("/game", this::createGame);
+//        Spark.put("/game", this::joinGame);
 
 
         // Register your endpoints and handle exceptions here.
@@ -44,21 +44,50 @@ public class Server {
         Spark.awaitStop();
     }
 
-    public Object register(Request req, Response res) throws DataAccessException{
+    public Object register(Request req, Response res) {
         UserData user = new Gson().fromJson(req.body(), UserData.class);
-        var auth = userService.register(user);
+        AuthData auth = null;
+        try {
+            auth = userService.register(user);
+            res.status(200);
+        }
+        catch (DataAccessException e){
+            Spark.halt(500, "{\"message\"Error: " + e.getMessage() + "\"})");
+        }
+        catch (BadRequestException e){
+            Spark.halt(400, serializer.toJson(new GenericError("Error: bad request")));
+        }
+        catch (AlreadyTakenException e){
+            Spark.halt(403, serializer.toJson(new GenericError("Error: already taken")));
+        }
         return serializer.toJson(auth);
     }
 
     public Object delete(Request req, Response res) throws DataAccessException {
         gameService.delete();
+        userService.delete();
         return serializer.toJson(new HashMap<>());
     }
 
-    public Object login(Request req, Response res) throws DataAccessException {
+    public Object login(Request req, Response res) {
         UserData user = new Gson().fromJson(req.body(), UserData.class);
-        var authData = userService.login(user);
+        AuthData authData = null;
+        try {
+            authData = userService.login(user);
+        }
+        catch (UnauthorizedException e){
+            Spark.halt(401, serializer.toJson(new GenericError("Error: unauthorized")));
+        }
+        catch (DataAccessException e){
+            Spark.halt(500, "{\"message\": \"Error:\"" + e.getMessage() + "\"})");
+        }
         return serializer.toJson(authData);
+    }
+
+    public Object logout(Request req, Response res) throws DataAccessException{
+        String authToken = req.headers("authorization");
+        var result = userService.logout(authToken);
+        return serializer.toJson(result);
     }
 
 }

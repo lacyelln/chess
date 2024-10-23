@@ -24,9 +24,8 @@ class UserServiceTest {
 
     @Test
     void register_failed() throws DataAccessException{
-        var user = new UserData("a", "a", "a");
+        var user = new UserData("", null, "a");
         var bool = true;
-        service.register(user);
         try {
             service.register(user);
         }

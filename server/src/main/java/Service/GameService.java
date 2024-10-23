@@ -1,9 +1,6 @@
 package Service;
 
-import dataaccess.AuthDAO;
-import dataaccess.DataAccessException;
-import dataaccess.GameDAO;
-import dataaccess.UserDAO;
+import dataaccess.*;
 import model.AuthData;
 import model.GameData;
 import model.UserData;
@@ -15,37 +12,35 @@ public class GameService {
 
     private final AuthDAO aData;
     private final GameDAO gData;
-    private final UserDAO uData;
 
-    public GameService(AuthDAO aData, GameDAO gData, UserDAO uData){
+    public GameService(AuthDAO aData, GameDAO gData){
         this.aData = aData;
         this.gData = gData;
-        this.uData = uData;
     }
 
-    public GameData createGame(String authToken, GameData game) throws DataAccessException{
+    public GameData createGame(String authToken, GameData game) throws DataAccessException, UnauthorizedException, BadRequestException{
         if(aData.getAuth(authToken) == null){
-            throw new DataAccessException("Error: unauthorized");
+            throw new UnauthorizedException();
         }
         if(gData.createGame(game) == null){
-            throw new DataAccessException("Error: bad request");
+            throw new BadRequestException();
         }
         return gData.createGame(game);
     }
 
-    public ArrayList<GameData> listGames(String authToken) throws DataAccessException{
+    public ArrayList<GameData> listGames(String authToken) throws DataAccessException, UnauthorizedException{
         if(aData.getAuth(authToken) == null){
-            throw new DataAccessException("Error: unauthorized");
+            throw new UnauthorizedException();
         }
         return gData.listGames();
     }
 
-    public void joinGame(String authToken, GameData game) throws DataAccessException{
+    public void joinGame(String authToken, GameData game) throws DataAccessException, BadRequestException, UnauthorizedException{
         if(aData.getAuth(authToken) == null){
-            throw new DataAccessException("Error: unauthorized");
+            throw new UnauthorizedException();
         }
         if(gData.getGame(game) == 0){
-            throw new DataAccessException("Error: bad request");
+            throw new BadRequestException();
         }
         gData.updateGame(game);
     }
