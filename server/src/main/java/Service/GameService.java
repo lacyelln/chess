@@ -9,6 +9,7 @@ import model.GameData;
 import model.UserData;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class GameService {
 
@@ -52,10 +53,12 @@ public class GameService {
         gData.updateGame(game);
     }
 
-    public void delete() throws DataAccessException{
+    public HashMap<String, String> delete() throws DataAccessException{
         gData.deleteAllGames();
         aData.deleteAllAuth();
         uData.deleteAllUsers();
+        return new HashMap<>();
+
     }
 }
 
