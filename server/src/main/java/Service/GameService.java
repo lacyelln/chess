@@ -23,9 +23,8 @@ public class GameService {
         this.uData = uData;
     }
 
-    public GameData createGame(AuthData auth, GameData game) throws DataAccessException{
-        UserData user = new UserData(auth.username(), null, null);
-        if(aData.getAuth(user) == null){
+    public GameData createGame(String authToken, GameData game) throws DataAccessException{
+        if(aData.getAuth(authToken) == null){
             throw new DataAccessException("Error: unauthorized");
         }
         if(gData.createGame(game) == null){
@@ -34,17 +33,15 @@ public class GameService {
         return gData.createGame(game);
     }
 
-    public ArrayList<GameData> listGames(AuthData auth) throws DataAccessException{
-        UserData user = new UserData(auth.username(), null, null);
-        if(aData.getAuth(user) == null){
+    public ArrayList<GameData> listGames(String authToken) throws DataAccessException{
+        if(aData.getAuth(authToken) == null){
             throw new DataAccessException("Error: unauthorized");
         }
         return gData.listGames();
     }
 
-    public void joinGame(AuthData auth, GameData game) throws DataAccessException{
-        UserData user = new UserData(auth.username(), null, null);
-        if(aData.getAuth(user) == null){
+    public void joinGame(String authToken, GameData game) throws DataAccessException{
+        if(aData.getAuth(authToken) == null){
             throw new DataAccessException("Error: unauthorized");
         }
         if(gData.getGame(game) == 0){
@@ -53,11 +50,9 @@ public class GameService {
         gData.updateGame(game);
     }
 
-    public HashMap<String, String> delete() throws DataAccessException{
+    public void delete() throws DataAccessException{
         gData.deleteAllGames();
-        aData.deleteAllAuth();
-        uData.deleteAllUsers();
-        return new HashMap<>();
+
 
     }
 }
