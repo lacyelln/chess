@@ -39,6 +39,6 @@ public class MemoryAuthDAO implements AuthDAO{
 
     @Override
     public void deleteAllAuth() throws DataAccessException {
-
+        AuthMap.clear();
     }
 }
