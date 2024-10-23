@@ -19,8 +19,6 @@ class UserServiceTest {
         UserService service = new UserService(mUser, mAuth);
         var authData = service.register(user);
         assertEquals(user.username(), authData.username());
-
-
     }
 
     @Test
