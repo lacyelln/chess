@@ -34,9 +34,9 @@ class GameServiceTest {
         var user = new UserService(mUser, mAuth);
         var auth = user.register(u);
         var game = new GameService(mAuth, mGame, mUser);
-        game.createGame(auth, g);
-        var result = game.delete();
-        assertEquals(new HashMap<>(), result);
+        game.createGame(auth.authToken(), g);
+        game.delete();
+        assertDoesNotThrow(() -> game.delete());
 
     }
 }
