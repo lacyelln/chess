@@ -10,18 +10,18 @@ public class MemoryAuthDAO implements AuthDAO{
     final private HashMap<String, AuthData> AuthMap = new HashMap<>();
 
     @Override
-    public AuthData createAuth(UserData u) throws DataAccessException {
+    public AuthData createAuth(String u) throws DataAccessException {
         String authToken = UUID.randomUUID().toString();
-        AuthData newAuthData = new AuthData(authToken, u.username());
+        AuthData newAuthData = new AuthData(authToken, u);
         AuthMap.put(authToken, newAuthData);
         return newAuthData;
     }
 
 
     @Override
-    public String getAuth(UserData u) throws DataAccessException {
+    public String getAuth(String authToken) throws DataAccessException {
         for (HashMap.Entry<String, AuthData> entry : AuthMap.entrySet()){
-            if(entry.getValue().username().equals(u.username())){
+            if(entry.getValue().authToken().equals(authToken)){
                 return entry.getKey();
             }
         }
@@ -29,10 +29,10 @@ public class MemoryAuthDAO implements AuthDAO{
     }
 
     @Override
-    public void deleteAuth(AuthData u) throws DataAccessException {
+    public void deleteAuth(String authToken) throws DataAccessException {
         for (HashMap.Entry<String, AuthData> entry : AuthMap.entrySet()) {
-            if (entry.getValue().username().equals(u.username())) {
-                AuthMap.remove(u.username(), u);
+            if (entry.getValue().authToken().equals(authToken)) {
+                AuthMap.remove(authToken);
             }
         }
     }
