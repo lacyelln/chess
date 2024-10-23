@@ -4,6 +4,8 @@ import dataaccess.*;
 import model.UserData;
 import org.junit.jupiter.api.Test;
 
+import java.util.HashMap;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class UserServiceTest {
@@ -21,12 +23,15 @@ class UserServiceTest {
     @Test
     void login() throws DataAccessException{
         var user = new UserData("a", "a", "a");
-        service.register(user);
         var userData = service.login(user);
         assertEquals(user.username(), userData.username());
     }
 
     @Test
-    void logout() {
+    void logout() throws DataAccessException{
+        var user = new UserData("a", "a", "a");
+        var authData = service.register(user);
+        var result = service.logout(authData.authToken());
+        assertEquals(new HashMap<>(), result);
     }
 }
