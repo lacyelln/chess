@@ -17,15 +17,30 @@ class GameServiceTest {
     }
 
     @Test
-    void listGames() {
+    void createGame_failed(){
+
     }
 
     @Test
-    void joinGame() {
+    void listGames_success() {
     }
 
     @Test
-    void delete() throws DataAccessException {
+    void listGames_failed(){
+
+    }
+
+    @Test
+    void joinGame_success(){
+    }
+
+    @Test
+    void joinGame_failed(){
+
+    }
+
+    @Test
+    void delete_success() throws DataAccessException, BadRequestException, UnauthorizedException {
         UserDAO mUser = new MemoryUserDAO();
         AuthDAO mAuth = new MemoryAuthDAO();
         GameDAO mGame = new MemoryGameDAO();
@@ -33,10 +48,14 @@ class GameServiceTest {
         GameData g = new GameData(123, null, null, "a", null);
         var user = new UserService(mUser, mAuth);
         var auth = user.register(u);
-        var game = new GameService(mAuth, mGame, mUser);
+        var game = new GameService(mAuth, mGame);
         game.createGame(auth.authToken(), g);
         game.delete();
-        assertDoesNotThrow(() -> game.delete());
+        assertDoesNotThrow(game::delete);
+    }
+
+    @Test
+    void delete_failed(){
 
     }
 }
