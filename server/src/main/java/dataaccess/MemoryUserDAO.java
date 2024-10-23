@@ -14,6 +14,7 @@ public class MemoryUserDAO implements UserDAO{
         UserMap.put(u.username(), u);
     }
 
+
     @Override
     public UserData getUser(UserData u) throws DataAccessException {
         if(UserMap.containsKey(u.username())){
@@ -27,5 +28,9 @@ public class MemoryUserDAO implements UserDAO{
         if(UserMap.containsKey(u.username())) {
             UserMap.remove(u.username(), u);
         }
+    }
+
+    public void deleteAllUsers() throws DataAccessException{
+        UserMap.clear();
     }
 }

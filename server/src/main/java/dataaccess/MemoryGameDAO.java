@@ -12,14 +12,22 @@ public class MemoryGameDAO implements GameDAO{
     @Override
     public GameData createGame(GameData g) throws DataAccessException {
         GameData newGame = new GameData(g.GameID(), g.whiteUsername(), g.blackUsername(), g.gameName(), g.game());
-        GameMap.put(g.GameID(), newGame);
+        for (HashMap.Entry<Integer, GameData> entry : GameMap.entrySet()) {
+            if (entry.getValue().gameName().equals(g.gameName())) {
+                if (GameMap.containsKey(entry.getKey())) {
+                    return null;
+                }
+                GameMap.put(entry.getKey(), newGame);
+            }
+        }
         return newGame;
     }
+
 
     @Override
     public int getGame(GameData g) throws DataAccessException {
         for (HashMap.Entry<Integer, GameData> entry : GameMap.entrySet()){
-            if(entry.getValue().GameID() == g.GameID()){
+            if(entry.getValue().gameName().equals(g.gameName())){
                 return entry.getKey();
             }
         }
@@ -39,14 +47,12 @@ public class MemoryGameDAO implements GameDAO{
     }
 
     @Override
-    public GameData updateGame(GameData g) throws DataAccessException {
+    public void updateGame(GameData g) throws DataAccessException {
         ChessGame updateGame = g.game();
         if(GameMap.containsKey(g.GameID())){
             GameData updatedData = new GameData(g.GameID(), g.whiteUsername(), g.blackUsername(), g.gameName(), updateGame);
             GameMap.put(g.GameID(), updatedData);
-            return updatedData;
         }
-        return null;
     }
 
     @Override
@@ -59,7 +65,7 @@ public class MemoryGameDAO implements GameDAO{
     }
 
     @Override
-    public void deleteAllGames(GameData g) throws DataAccessException {
+    public void deleteAllGames() throws DataAccessException {
         GameMap.clear();
     }
 }
