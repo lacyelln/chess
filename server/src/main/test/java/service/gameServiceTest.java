@@ -6,6 +6,8 @@ import model.GameData;
 import model.UserData;
 import org.junit.jupiter.api.Test;
 
+import java.util.Base64;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class gameServiceTest {
@@ -44,11 +46,39 @@ class gameServiceTest {
 
 
     @Test
-    void listGamesSuccess() {
+    void listGamesSuccess() throws DataAccessException{
+        AuthData authData = userService.register(user);
+        boolean var = false;
+        try {
+            service.createGame(authData.authToken(), "taco");
+            service.createGame(authData.authToken(), "cola");
+            service.createGame(authData.authToken(), "burger");
+            service.listGames(authData.authToken());
+            var = true;
+
+        }
+        catch (DataAccessException | UnauthorizedException e) {
+            var = false;
+        }
+        assertTrue(var);
     }
 
     @Test
-    void listGamesFailed(){
+    void listGamesFailed() throws DataAccessException {
+        AuthData authData = userService.register(user);
+        boolean var = false;
+        try {
+            service.createGame(authData.authToken(), null);
+            service.createGame(authData.authToken(), "cola");
+            service.createGame(null, "burger");
+            service.listGames(authData.authToken());
+            var = true;
+
+        }
+        catch (DataAccessException | UnauthorizedException | BadRequestException e) {
+            var = false;
+        }
+        assertFalse(var);
 
     }
 
