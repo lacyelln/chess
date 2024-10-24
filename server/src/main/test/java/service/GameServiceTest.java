@@ -86,7 +86,7 @@ class GameServiceTest {
         boolean var;
         try {
             GameData game = service.createGame(authToken, "taco");
-            game = new GameData(game.GameID(), "WHITE", null, "taco", null);
+            game = new GameData(game.gameID(), "WHITE", null, "taco", null);
             service.joinGame(authToken, game);
             var = true;
         }
@@ -102,7 +102,7 @@ class GameServiceTest {
         boolean var;
         try {
             GameData game = service.createGame(authToken, "taco");
-            game = new GameData(game.GameID(), "WHITE", null, "taco", null);
+            game = new GameData(game.gameID(), "WHITE", null, "taco", null);
             service.joinGame(authToken, game);
             var = true;
         }

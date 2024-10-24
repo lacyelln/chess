@@ -22,7 +22,7 @@ public class MemoryGameDAO implements GameDAO{
         }
         int randomNumber = MemoryGameDAO.generateRandomNumber(1, 1000);
         newGame = new GameData(randomNumber, null, null, g, new ChessGame());
-        GameMap.put(newGame.GameID(), newGame);
+        GameMap.put(newGame.gameID(), newGame);
         return newGame;
     }
     public static int generateRandomNumber(int min, int max) {
@@ -56,9 +56,9 @@ public class MemoryGameDAO implements GameDAO{
     @Override
     public void updateGame(GameData g) throws DataAccessException {
         ChessGame updateGame = g.game();
-        if(GameMap.containsKey(g.GameID())){
-            GameData updatedData = new GameData(g.GameID(), g.whiteUsername(), g.blackUsername(), g.gameName(), updateGame);
-            GameMap.put(g.GameID(), updatedData);
+        if(GameMap.containsKey(g.gameID())){
+            GameData updatedData = new GameData(g.gameID(), g.whiteUsername(), g.blackUsername(), g.gameName(), updateGame);
+            GameMap.put(g.gameID(), updatedData);
         }
     }
 
