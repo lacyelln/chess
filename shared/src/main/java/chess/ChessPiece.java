@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Objects;
 
+import static chess.ChessPosition.pawnPos;
+
 /**
  * Represents a single chess piece
  * <p>
@@ -95,31 +97,7 @@ public class ChessPiece {
                 }
                 else{ directions = new int[][]{{-1, -1}, {-1, 1},{-1, 0}};}
             }
-            for (int[] direction : directions){
-                int addRow = direction[0]; //accesses the first number in the tuple(row)
-                int addCol = direction[1];
-                ChessPosition newPosition = myPosition.adjust(addRow, addCol);
-                if (ChessPosition.inBounds(newPosition)) {
-                    continue;
-                }
-                ChessPiece pieceAtPosition = board.getPiece(newPosition);
-                if (newPosition.getColumn() == myPosition.getColumn()) { //if there is no piece in front you can move.
-                    if (pieceAtPosition == null) {
-                        ChessPosition.pawnAdd(possibles, myColor, myPosition, newPosition);
-                    }
-                    else {
-                        break;
-                    }
-                }
-                else {
-                    if(pieceAtPosition != null){
-                        ChessGame.TeamColor theirColor = pieceAtPosition.getTeamColor();
-                        if (theirColor != myColor) { //if it's an opponent
-                            ChessPosition.pawnAdd(possibles, myColor, myPosition, newPosition);
-                        }
-                    }
-                }
-            }
+            pawnPos(possibles, myColor, myPosition, board, directions);
         }
         return possibles;
 

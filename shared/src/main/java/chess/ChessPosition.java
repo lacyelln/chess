@@ -79,21 +79,51 @@ public class ChessPosition {
         }
     }
 
+    public static void pawnPos(Collection<ChessMove> possibles, ChessGame.TeamColor myColor, ChessPosition myPosition, ChessBoard board, int[][] directions){
+        for (int[] direction : directions){
+            int addRow = direction[0]; //accesses the first number in the tuple(row)
+            int addCol = direction[1];
+            ChessPosition newPosition = myPosition.adjust(addRow, addCol);
+            if (ChessPosition.inBounds(newPosition)) {
+                continue;
+            }
+            ChessPiece pieceAtPosition = board.getPiece(newPosition);
+            if (newPosition.getColumn() == myPosition.getColumn()) { //if there is no piece in front you can move.
+                if (pieceAtPosition == null) {
+                    ChessPosition.pawnAdd(possibles, myColor, myPosition, newPosition);
+                }
+                else {
+                    break;
+                }
+            }
+            else {
+                if(pieceAtPosition != null){
+                    ChessGame.TeamColor theirColor = pieceAtPosition.getTeamColor();
+                    if (theirColor != myColor) { //if it's an opponent
+                        ChessPosition.pawnAdd(possibles, myColor, myPosition, newPosition);
+                    }
+                }
+            }
+        }
+    }
+
     public static void pawnAdd(Collection<ChessMove> possibles, ChessGame.TeamColor myColor, ChessPosition myPosition, ChessPosition newPosition){
         if(myColor == ChessGame.TeamColor.WHITE && myPosition.getRow() == 7) {
-            possibles.add(new ChessMove(myPosition, newPosition, ChessPiece.PieceType.QUEEN));
-            possibles.add(new ChessMove(myPosition, newPosition, ChessPiece.PieceType.ROOK));
-            possibles.add(new ChessMove(myPosition, newPosition, ChessPiece.PieceType.KNIGHT));
-            possibles.add(new ChessMove(myPosition, newPosition, ChessPiece.PieceType.BISHOP));
+            addingPiece(possibles, myPosition, newPosition);
         } else if (myColor == ChessGame.TeamColor.BLACK && myPosition.getRow() == 2){
-            possibles.add(new ChessMove(myPosition, newPosition, ChessPiece.PieceType.QUEEN));
-            possibles.add(new ChessMove(myPosition, newPosition, ChessPiece.PieceType.ROOK));
-            possibles.add(new ChessMove(myPosition, newPosition, ChessPiece.PieceType.KNIGHT));
-            possibles.add(new ChessMove(myPosition, newPosition, ChessPiece.PieceType.BISHOP));
+            addingPiece(possibles, myPosition, newPosition);
         }
         else {
             possibles.add(new ChessMove(myPosition, newPosition, null));
         }
+    }
+
+    public static void addingPiece(Collection<ChessMove> possibles, ChessPosition myPosition, ChessPosition newPosition){
+        possibles.add(new ChessMove(myPosition, newPosition, ChessPiece.PieceType.QUEEN));
+        possibles.add(new ChessMove(myPosition, newPosition, ChessPiece.PieceType.ROOK));
+        possibles.add(new ChessMove(myPosition, newPosition, ChessPiece.PieceType.KNIGHT));
+        possibles.add(new ChessMove(myPosition, newPosition, ChessPiece.PieceType.BISHOP));
+
     }
 
     /**
