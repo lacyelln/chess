@@ -36,8 +36,7 @@ public class ChessPosition {
             ChessPosition newPosition = myPosition;
             while (true) {
                 newPosition = newPosition.adjust(addRow, addCol);
-                if (newPosition.getRow() < 1 || newPosition.getRow() > 8
-                        || newPosition.getColumn() < 1 || newPosition.getColumn() > 8) {
+                if (inBounds(newPosition)) {
                     break;
                 }
                 ChessPiece pieceAtPosition = board.getPiece(newPosition);
@@ -54,14 +53,17 @@ public class ChessPosition {
             }
         }
     }
+    public static boolean inBounds(ChessPosition newPosition){
+        return newPosition.getRow() < 1 || newPosition.getRow() > 8
+                || newPosition.getColumn() < 1 || newPosition.getColumn() > 8;
+    }
 
     public static void possibleSingle(Collection<ChessMove> possibles, int[][] directions, ChessBoard board, ChessPosition myPosition, ChessGame.TeamColor myColor){
         for (int[] direction : directions) {
             int addRow = direction[0]; //accesses the first number in the tuple(row)
             int addCol = direction[1]; //accesses the second number in the tuple(col)
             ChessPosition newPosition = myPosition.adjust(addRow, addCol);
-            if (newPosition.getRow() < 1 || newPosition.getRow() > 8
-                    || newPosition.getColumn() < 1 || newPosition.getColumn() > 8) {
+            if (inBounds(newPosition)) {
                 continue;
             }
             ChessPiece pieceAtPosition = board.getPiece(newPosition);
@@ -74,6 +76,23 @@ public class ChessPosition {
                     possibles.add(new ChessMove(myPosition, newPosition, null));
                 }
             }
+        }
+    }
+
+    public static void pawnAdd(Collection<ChessMove> possibles, ChessGame.TeamColor myColor, ChessPosition myPosition, ChessPosition newPosition){
+        if(myColor == ChessGame.TeamColor.WHITE && myPosition.getRow() == 7) {
+            possibles.add(new ChessMove(myPosition, newPosition, ChessPiece.PieceType.QUEEN));
+            possibles.add(new ChessMove(myPosition, newPosition, ChessPiece.PieceType.ROOK));
+            possibles.add(new ChessMove(myPosition, newPosition, ChessPiece.PieceType.KNIGHT));
+            possibles.add(new ChessMove(myPosition, newPosition, ChessPiece.PieceType.BISHOP));
+        } else if (myColor == ChessGame.TeamColor.BLACK && myPosition.getRow() == 2){
+            possibles.add(new ChessMove(myPosition, newPosition, ChessPiece.PieceType.QUEEN));
+            possibles.add(new ChessMove(myPosition, newPosition, ChessPiece.PieceType.ROOK));
+            possibles.add(new ChessMove(myPosition, newPosition, ChessPiece.PieceType.KNIGHT));
+            possibles.add(new ChessMove(myPosition, newPosition, ChessPiece.PieceType.BISHOP));
+        }
+        else {
+            possibles.add(new ChessMove(myPosition, newPosition, null));
         }
     }
 
