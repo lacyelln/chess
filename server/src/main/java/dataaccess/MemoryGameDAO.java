@@ -5,6 +5,7 @@ import model.GameData;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Objects;
 import java.util.Random;
 
 public class MemoryGameDAO implements GameDAO{
@@ -32,9 +33,9 @@ public class MemoryGameDAO implements GameDAO{
 
 
     @Override
-    public GameData getGame(String gameName) throws DataAccessException {
+    public GameData getGame(Integer gameID) throws DataAccessException {
         for (HashMap.Entry<Integer, GameData> entry : GAME_MAP.entrySet()){
-            if(entry.getValue().gameName().equals(gameName)){
+            if(entry.getValue().gameID() == gameID){
                 return GAME_MAP.get(entry.getKey());
             }
         }
@@ -54,11 +55,27 @@ public class MemoryGameDAO implements GameDAO{
     }
 
     @Override
-    public void updateGame(GameData g) throws DataAccessException {
-        ChessGame updateGame = g.game();
-        if(GAME_MAP.containsKey(g.gameID())){
-            GameData updatedData = new GameData(g.gameID(), g.whiteUsername(), g.blackUsername(), g.gameName(), updateGame);
-            GAME_MAP.put(g.gameID(), updatedData);
+    public void updateGame(Integer gameID, String username, String playerColor) throws DataAccessException {
+        GameData updatedData;
+        if(GAME_MAP.containsKey(gameID)){
+            if (Objects.equals(playerColor, "WHITE")){
+                if (GAME_MAP.get(gameID).whiteUsername() == null){
+                    updatedData = new GameData(gameID, username, GAME_MAP.get(gameID).blackUsername(), GAME_MAP.get(gameID).gameName(), new ChessGame());
+                }
+                else {
+                    throw new AlreadyTakenException();
+                }
+            }
+            else{
+                if (GAME_MAP.get(gameID).blackUsername() == null) {
+                    updatedData = new GameData(gameID, GAME_MAP.get(gameID).whiteUsername(), username, GAME_MAP.get(gameID).gameName(), new ChessGame());
+                }
+                else{
+                    throw new AlreadyTakenException();
+                }
+            }
+
+            GAME_MAP.put(gameID, updatedData);
         }
     }
 

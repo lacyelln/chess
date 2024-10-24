@@ -3,6 +3,7 @@ package dataaccess;
 import model.AuthData;
 import model.UserData;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.UUID;
 
@@ -11,7 +12,11 @@ public class MemoryAuthDAO implements AuthDAO{
 
     @Override
     public AuthData createAuth(String u) throws DataAccessException {
-        String authToken = UUID.randomUUID().toString();
+        String authToken;
+        do {
+            authToken = UUID.randomUUID().toString();
+        } while (AUTH_MAP.containsKey(authToken));
+
         AuthData newAuthData = new AuthData(authToken, u);
         AUTH_MAP.put(authToken, newAuthData);
         return newAuthData;
@@ -19,10 +24,10 @@ public class MemoryAuthDAO implements AuthDAO{
 
 
     @Override
-    public String getAuth(String authToken) throws DataAccessException {
+    public AuthData getAuth(String authToken) throws DataAccessException {
         for (HashMap.Entry<String, AuthData> entry : AUTH_MAP.entrySet()){
             if(entry.getValue().authToken().equals(authToken)){
-                return entry.getKey();
+                return entry.getValue();
             }
         }
         return null;

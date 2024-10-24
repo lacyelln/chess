@@ -10,6 +10,7 @@ import spark.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 public class Server {
     private final MemoryAuthDAO authDAO = new MemoryAuthDAO();
@@ -107,7 +108,7 @@ public class Server {
     public Object createGame(Request req, Response res) {
         String authToken = req.headers("authorization");
         String gameName = req.body();
-        GameData gameID = new GameData(0, null, null, gameName, null);
+        GameData gameID = null;
         try {
             gameID = gameService.createGame(authToken, gameName);
         }
@@ -125,17 +126,20 @@ public class Server {
 
     public Object joinGame(Request req, Response res){
         String authToken = req.headers("authorization");
-        String playerColor = req.body();
-        //int gameID = req.body();
-        GameData game = new GameData(1, null, null, null, null);
-//        if (Objects.equals(playerColor, "WHITE")){
-//            game = new GameData(intGameId, playerColor, null, null, null);
-//        }
-//        if (Objects.equals(playerColor, "BLACK")){
-//            game = new GameData(intGameId, null, playerColor, null, null);
-//        }
+        HashMap<String, Object> body = new Gson().fromJson(req.body(), HashMap.class);
         try{
-            gameService.joinGame(authToken, game);
+            if(body.get("gameID") == null){
+                throw new BadRequestException();
+            }
+            int gameID = ((Double)body.get("gameID")).intValue();
+            if(body.get("playerColor") == null){
+                throw new BadRequestException();
+            }
+            String playerColor = (String)body.get("playerColor");
+            if ((!playerColor.equals("WHITE") && !playerColor.equals("BLACK"))){
+                throw new BadRequestException();
+            }
+            gameService.joinGame(authToken, gameID, playerColor);
         }
         catch(DataAccessException e){
             Spark.halt(500, "{\"message\": \"Error:\"" + e.getMessage() + "\"})");
@@ -164,6 +168,6 @@ public class Server {
         catch (UnauthorizedException e){
             Spark.halt(401, serializer.toJson(new GenericError("Error: unauthorized")));
         }
-        return serializer.toJson(listOfGames);
+        return serializer.toJson(Map.of("games", listOfGames));
     }
 }

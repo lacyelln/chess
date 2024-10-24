@@ -86,8 +86,7 @@ class GameServiceTest {
         boolean var;
         try {
             GameData game = service.createGame(authToken, "taco");
-            game = new GameData(game.gameID(), "WHITE", null, "taco", null);
-            service.joinGame(authToken, game);
+            service.joinGame(authToken, game.gameID(), "WHITE");
             var = true;
         }
         catch (DataAccessException | BadRequestException | UnauthorizedException e){
@@ -102,8 +101,7 @@ class GameServiceTest {
         boolean var;
         try {
             GameData game = service.createGame(authToken, "taco");
-            game = new GameData(game.gameID(), "WHITE", null, "taco", null);
-            service.joinGame(authToken, game);
+            service.joinGame(authToken, game.gameID(), "WHITE");
             var = true;
         }
         catch (DataAccessException | BadRequestException | UnauthorizedException e){

@@ -1,6 +1,7 @@
 package service;
 
 import dataaccess.*;
+import model.AuthData;
 import model.GameData;
 
 import java.util.ArrayList;
@@ -20,7 +21,7 @@ public class GameService {
             throw new UnauthorizedException();
         }
         GameData gameId = gData.createGame(gameName);
-        if(gameId == null | gameName == null){
+        if(gameId == null || gameName == null){
             throw new BadRequestException();
         }
         return gameId;
@@ -33,18 +34,15 @@ public class GameService {
         return gData.listGames();
     }
 
-    public void joinGame(String authToken, GameData game) throws DataAccessException, BadRequestException, UnauthorizedException{
+    public void joinGame(String authToken, Integer gameID, String playerColor) throws DataAccessException, BadRequestException, UnauthorizedException{
         if(aData.getAuth(authToken) == null){
             throw new UnauthorizedException();
         }
-        if(game.gameName() == null){
+        if(gData.getGame(gameID) == null){
             throw new BadRequestException();
         }
-        if(gData.getGame(game.gameName()) == null){
-            throw new AlreadyTakenException();
-        }
-
-        gData.updateGame(game);
+        AuthData auth = aData.getAuth(authToken);
+        gData.updateGame(gameID, auth.username(), playerColor);
     }
 
     public void delete() throws DataAccessException{
