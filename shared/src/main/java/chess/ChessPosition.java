@@ -1,5 +1,6 @@
 package chess;
 
+import java.util.Collection;
 import java.util.Objects;
 
 /**
@@ -28,6 +29,53 @@ public class ChessPosition {
         return new ChessPosition(newRow, newCol);
     }
 
+    public static void possibleMult(Collection<ChessMove> possibles, int[][] directions, ChessBoard board, ChessPosition myPosition, ChessGame.TeamColor myColor){
+        for (int[] direction : directions) {
+            int addRow = direction[0]; //accesses the first number in the tuple(row)
+            int addCol = direction[1]; //accesses the second number in the tuple(col)
+            ChessPosition newPosition = myPosition;
+            while (true) {
+                newPosition = newPosition.adjust(addRow, addCol);
+                if (newPosition.getRow() < 1 || newPosition.getRow() > 8
+                        || newPosition.getColumn() < 1 || newPosition.getColumn() > 8) {
+                    break;
+                }
+                ChessPiece pieceAtPosition = board.getPiece(newPosition);
+                if (pieceAtPosition == null) {
+                    possibles.add(new ChessMove(myPosition, newPosition, null));
+                }
+                else {
+                    ChessGame.TeamColor theirColor = pieceAtPosition.getTeamColor();
+                    if(theirColor != myColor) { //if it's an opponent
+                        possibles.add(new ChessMove(myPosition, newPosition, null));
+                    }
+                    break;
+                }
+            }
+        }
+    }
+
+    public static void possibleSingle(Collection<ChessMove> possibles, int[][] directions, ChessBoard board, ChessPosition myPosition, ChessGame.TeamColor myColor){
+        for (int[] direction : directions) {
+            int addRow = direction[0]; //accesses the first number in the tuple(row)
+            int addCol = direction[1]; //accesses the second number in the tuple(col)
+            ChessPosition newPosition = myPosition.adjust(addRow, addCol);
+            if (newPosition.getRow() < 1 || newPosition.getRow() > 8
+                    || newPosition.getColumn() < 1 || newPosition.getColumn() > 8) {
+                continue;
+            }
+            ChessPiece pieceAtPosition = board.getPiece(newPosition);
+            if (pieceAtPosition == null) {
+                possibles.add(new ChessMove(myPosition, newPosition, null));
+            }
+            else {
+                ChessGame.TeamColor theirColor = pieceAtPosition.getTeamColor();
+                if(theirColor != myColor) { //if it's an opponent
+                    possibles.add(new ChessMove(myPosition, newPosition, null));
+                }
+            }
+        }
+    }
 
     /**
      * @return which row this position is in
