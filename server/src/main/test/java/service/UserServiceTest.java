@@ -33,7 +33,7 @@ class UserServiceTest {
 
     @Test
     void loginSuccess() throws DataAccessException, UnauthorizedException{
-        var user = new UserData("a", "a", "a");
+        var user = new UserData("b", "b", "b");
         service.register(user);
         var userData = service.login(user);
         assertEquals(user.username(), userData.username());
@@ -41,7 +41,7 @@ class UserServiceTest {
 
     @Test
     void loginFailed() throws DataAccessException {
-        var user = new UserData("a", "a", "a");
+        var user = new UserData("c", "c", "c");
         var result = true;
         try {
             service.login(user);
@@ -54,7 +54,7 @@ class UserServiceTest {
 
     @Test
     void logoutSuccess() throws DataAccessException{
-        var user = new UserData("a", "a", "a");
+        var user = new UserData("d", "d", "d");
         var authData = service.register(user);
         String result = "";
         try {
@@ -69,7 +69,7 @@ class UserServiceTest {
 
     @Test
     void logoutFailed() throws DataAccessException, UnauthorizedException{
-        var user = new UserData("a", "a", "a");
+        var user = new UserData("m", "m", "m");
         var authData = service.register(user);
         mAuth.deleteAuth(authData.authToken());
         String result = "";

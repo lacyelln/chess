@@ -19,8 +19,8 @@ class GameServiceTest {
 
 
     @Test
-    void createGame() throws DataAccessException, UnauthorizedException, BadRequestException {
-        AuthData authData = userService.register(user);
+    void createGame() throws DataAccessException, UnauthorizedException, BadRequestException, AlreadyTakenException {
+        AuthData authData = userService.register(new UserData("ma", "da", "ka"));
         service.createGame(authData.authToken(), "happy chess");
         boolean gameCreated = true;
         assertTrue(gameCreated);
@@ -44,13 +44,15 @@ class GameServiceTest {
 
 
     @Test
-    void listGamesSuccess() throws DataAccessException{
+    void listGamesSuccess() throws DataAccessException, BadRequestException{
         AuthData authData = userService.register(user);
-        boolean var = false;
+        AuthData authData1 = userService.register(new UserData("b", "b", "b"));
+        AuthData authData2 = userService.register(new UserData("c","c", "c"));
+        boolean var;
         try {
-            service.createGame(authData.authToken(), "taco");
-            service.createGame(authData.authToken(), "cola");
-            service.createGame(authData.authToken(), "burger");
+            service.createGame(authData.authToken(), "tnola");
+            service.createGame(authData1.authToken(), "cola");
+            service.createGame(authData2.authToken(), "burger");
             service.listGames(authData.authToken());
             var = true;
 
@@ -63,8 +65,9 @@ class GameServiceTest {
 
     @Test
     void listGamesFailed() throws DataAccessException {
+        UserData user = new UserData("taco", "a", "b");
         AuthData authData = userService.register(user);
-        boolean var = false;
+        boolean var;
         try {
             service.createGame(authData.authToken(), null);
             service.createGame(authData.authToken(), "cola");
@@ -81,12 +84,13 @@ class GameServiceTest {
     }
 
     @Test
-    void joinGameSuccess(){
-        String authToken = "lalala";
+    void joinGameSuccess() throws DataAccessException {
+        UserData user = new UserData("lacy", "cookie", "igoo@gmail.com");
+        AuthData authData= userService.register(user);
         boolean var;
         try {
-            GameData game = service.createGame(authToken, "taco");
-            service.joinGame(authToken, game.gameID(), "WHITE");
+            GameData game = service.createGame(authData.authToken(), "taco");
+            service.joinGame(authData.authToken(), game.gameID(), "WHITE");
             var = true;
         }
         catch (DataAccessException | BadRequestException | UnauthorizedException e){
