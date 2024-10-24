@@ -127,10 +127,10 @@ public class ChessGame {
         ChessPosition kingPosition = null; //checking where my kings position
         for(int i = 1; i <= 8; i++){
             for(int j = 1; j <= 8; j++){
-                ChessPosition pos = new ChessPosition(i, j);
-                if(chessBoard.getPiece(pos) != null) {
-                    if (chessBoard.getPiece(pos).getPieceType() == ChessPiece.PieceType.KING && chessBoard.getPiece(pos).getTeamColor() == teamColor) {
-                        kingPosition = pos;
+                ChessPosition p = new ChessPosition(i, j);
+                if(chessBoard.getPiece(p) != null) {
+                    if (chessBoard.getPiece(p).getPieceType() == ChessPiece.PieceType.KING && chessBoard.getPiece(p).getTeamColor() == teamColor) {
+                        kingPosition = p;
                     }
                 }
             }

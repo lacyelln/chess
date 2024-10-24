@@ -55,12 +55,12 @@ public class MemoryGameDAO implements GameDAO{
     }
 
     @Override
-    public void updateGame(Integer gameID, String username, String playerColor) throws DataAccessException {
+    public void updateGame(Integer gameID, String user, String playerColor) throws DataAccessException {
         GameData updatedData;
         if(GAME_MAP.containsKey(gameID)){
             if (Objects.equals(playerColor, "WHITE")){
                 if (GAME_MAP.get(gameID).whiteUsername() == null){
-                    updatedData = new GameData(gameID, username, GAME_MAP.get(gameID).blackUsername(), GAME_MAP.get(gameID).gameName(), new ChessGame());
+                    updatedData = new GameData(gameID, user, GAME_MAP.get(gameID).blackUsername(), GAME_MAP.get(gameID).gameName(), new ChessGame());
                 }
                 else {
                     throw new AlreadyTakenException();
@@ -68,7 +68,7 @@ public class MemoryGameDAO implements GameDAO{
             }
             else{
                 if (GAME_MAP.get(gameID).blackUsername() == null) {
-                    updatedData = new GameData(gameID, GAME_MAP.get(gameID).whiteUsername(), username, GAME_MAP.get(gameID).gameName(), new ChessGame());
+                    updatedData = new GameData(gameID, GAME_MAP.get(gameID).whiteUsername(), user, GAME_MAP.get(gameID).gameName(), new ChessGame());
                 }
                 else{
                     throw new AlreadyTakenException();

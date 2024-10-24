@@ -29,24 +29,24 @@ public class ChessPosition {
         return new ChessPosition(newRow, newCol);
     }
 
-    public static void possibleMult(Collection<ChessMove> possibles, int[][] directions, ChessBoard board, ChessPosition myPosition, ChessGame.TeamColor myColor){
-        for (int[] direction : directions) {
+    public static void possibleMult(Collection<ChessMove> p, int[][] d, ChessBoard b, ChessPosition myPos, ChessGame.TeamColor myColor){
+        for (int[] direction : d) {
             int addRow = direction[0]; //accesses the first number in the tuple(row)
             int addCol = direction[1]; //accesses the second number in the tuple(col)
-            ChessPosition newPosition = myPosition;
+            ChessPosition newPosition = myPos;
             while (true) {
                 newPosition = newPosition.adjust(addRow, addCol);
                 if (inBounds(newPosition)) {
                     break;
                 }
-                ChessPiece pieceAtPosition = board.getPiece(newPosition);
+                ChessPiece pieceAtPosition = b.getPiece(newPosition);
                 if (pieceAtPosition == null) {
-                    possibles.add(new ChessMove(myPosition, newPosition, null));
+                    p.add(new ChessMove(myPos, newPosition, null));
                 }
                 else {
                     ChessGame.TeamColor theirColor = pieceAtPosition.getTeamColor();
                     if(theirColor != myColor) { //if it's an opponent
-                        possibles.add(new ChessMove(myPosition, newPosition, null));
+                        p.add(new ChessMove(myPos, newPosition, null));
                     }
                     break;
                 }
@@ -58,39 +58,39 @@ public class ChessPosition {
                 || newPosition.getColumn() < 1 || newPosition.getColumn() > 8;
     }
 
-    public static void possibleSingle(Collection<ChessMove> possibles, int[][] directions, ChessBoard board, ChessPosition myPosition, ChessGame.TeamColor myColor){
-        for (int[] direction : directions) {
+    public static void possibleSingle(Collection<ChessMove> p, int[][] d, ChessBoard board, ChessPosition myPos, ChessGame.TeamColor myColor){
+        for (int[] direction : d) {
             int addRow = direction[0]; //accesses the first number in the tuple(row)
             int addCol = direction[1]; //accesses the second number in the tuple(col)
-            ChessPosition newPosition = myPosition.adjust(addRow, addCol);
+            ChessPosition newPosition = myPos.adjust(addRow, addCol);
             if (inBounds(newPosition)) {
                 continue;
             }
             ChessPiece pieceAtPosition = board.getPiece(newPosition);
             if (pieceAtPosition == null) {
-                possibles.add(new ChessMove(myPosition, newPosition, null));
+                p.add(new ChessMove(myPos, newPosition, null));
             }
             else {
                 ChessGame.TeamColor theirColor = pieceAtPosition.getTeamColor();
                 if(theirColor != myColor) { //if it's an opponent
-                    possibles.add(new ChessMove(myPosition, newPosition, null));
+                    p.add(new ChessMove(myPos, newPosition, null));
                 }
             }
         }
     }
 
-    public static void pawnPos(Collection<ChessMove> possibles, ChessGame.TeamColor myColor, ChessPosition myPosition, ChessBoard board, int[][] directions){
-        for (int[] direction : directions){
+    public static void pawnPos(Collection<ChessMove> p, ChessGame.TeamColor myColor, ChessPosition myPos, ChessBoard b, int[][] d){
+        for (int[] direction : d){
             int addRow = direction[0]; //accesses the first number in the tuple(row)
             int addCol = direction[1];
-            ChessPosition newPosition = myPosition.adjust(addRow, addCol);
+            ChessPosition newPosition = myPos.adjust(addRow, addCol);
             if (ChessPosition.inBounds(newPosition)) {
                 continue;
             }
-            ChessPiece pieceAtPosition = board.getPiece(newPosition);
-            if (newPosition.getColumn() == myPosition.getColumn()) { //if there is no piece in front you can move.
+            ChessPiece pieceAtPosition = b.getPiece(newPosition);
+            if (newPosition.getColumn() == myPos.getColumn()) { //if there is no piece in front you can move.
                 if (pieceAtPosition == null) {
-                    ChessPosition.pawnAdd(possibles, myColor, myPosition, newPosition);
+                    ChessPosition.pawnAdd(p, myColor, myPos, newPosition);
                 }
                 else {
                     break;
@@ -100,7 +100,7 @@ public class ChessPosition {
                 if(pieceAtPosition != null){
                     ChessGame.TeamColor theirColor = pieceAtPosition.getTeamColor();
                     if (theirColor != myColor) { //if it's an opponent
-                        ChessPosition.pawnAdd(possibles, myColor, myPosition, newPosition);
+                        ChessPosition.pawnAdd(p, myColor, myPos, newPosition);
                     }
                 }
             }
