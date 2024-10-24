@@ -2,6 +2,7 @@ package service;
 
 import dataaccess.*;
 import model.UserData;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -11,9 +12,15 @@ class UserServiceTest {
     private final AuthDAO mAuth = new MemoryAuthDAO();
     UserService service = new UserService(mUser, mAuth);
 
+    @BeforeEach
+    void setUp() throws DataAccessException {
+        mAuth.deleteAllAuth();
+        mUser.deleteAllUsers();
+    }
+
     @Test
     void registerSuccess() throws DataAccessException {
-        var user = new UserData("a", "a", "a");
+        var user = new UserData("f", "a", "a");
         var authData = service.register(user);
         assertEquals(user.username(), authData.username());
     }
@@ -21,19 +28,12 @@ class UserServiceTest {
     @Test
     void registerFailed() throws DataAccessException{
         var user = new UserData("", null, "a");
-        var bool = true;
-        try {
-            service.register(user);
-        }
-        catch(BadRequestException | DataAccessException | AlreadyTakenException e){
-            bool = false;
-        }
-        assertFalse(bool);
+        assertThrows(BadRequestException.class, () -> service.register(user));
     }
 
     @Test
     void loginSuccess() throws DataAccessException, UnauthorizedException{
-        var user = new UserData("b", "b", "b");
+        var user = new UserData("z", "b", "b");
         service.register(user);
         var userData = service.login(user);
         assertEquals(user.username(), userData.username());

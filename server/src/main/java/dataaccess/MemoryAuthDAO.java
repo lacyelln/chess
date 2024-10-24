@@ -16,7 +16,6 @@ public class MemoryAuthDAO implements AuthDAO{
         do {
             authToken = UUID.randomUUID().toString();
         } while (AUTH_MAP.containsKey(authToken));
-
         AuthData newAuthData = new AuthData(authToken, u);
         AUTH_MAP.put(authToken, newAuthData);
         return newAuthData;
@@ -35,11 +34,7 @@ public class MemoryAuthDAO implements AuthDAO{
 
     @Override
     public void deleteAuth(String authToken) throws DataAccessException {
-        for (HashMap.Entry<String, AuthData> entry : AUTH_MAP.entrySet()) {
-            if (entry.getValue().authToken().equals(authToken)) {
-                AUTH_MAP.remove(authToken);
-            }
-        }
+        AUTH_MAP.remove(authToken);
     }
 
     @Override
