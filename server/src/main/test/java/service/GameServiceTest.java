@@ -6,17 +6,15 @@ import model.GameData;
 import model.UserData;
 import org.junit.jupiter.api.Test;
 
-import java.util.Base64;
-
 import static org.junit.jupiter.api.Assertions.*;
 
-class gameServiceTest {
+class GameServiceTest {
     UserDAO mUser = new MemoryUserDAO();
     AuthDAO mAuth = new MemoryAuthDAO();
     GameDAO mGame = new MemoryGameDAO();
     UserData user = new UserData("a", "a", "a");
-    gameservice service = new gameservice(mAuth, mGame);
-    userservice userService = new userservice(mUser, mAuth);
+    GameService service = new GameService(mAuth, mGame);
+    UserService userService = new UserService(mUser, mAuth);
     GameData game = new GameData(0, null, null, "happy chess", null);
 
 
@@ -118,9 +116,9 @@ class gameServiceTest {
     void deleteSuccess() throws DataAccessException, UnauthorizedException {
         UserData u = new UserData("a", "a", "a");
         GameData g = new GameData(123, null, null, "a", null);
-        var user = new userservice(mUser, mAuth);
+        var user = new UserService(mUser, mAuth);
         var auth = user.register(u);
-        var game = new gameservice(mAuth, mGame);
+        var game = new GameService(mAuth, mGame);
         game.createGame(auth.authToken(), g.gameName());
         game.delete();
         user.delete();

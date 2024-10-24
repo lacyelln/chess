@@ -5,12 +5,12 @@ import model.GameData;
 
 import java.util.ArrayList;
 
-public class gameservice {
+public class GameService {
 
     private final AuthDAO aData;
     private final GameDAO gData;
 
-    public gameservice(AuthDAO aData, GameDAO gData){
+    public GameService(AuthDAO aData, GameDAO gData){
         this.aData = aData;
         this.gData = gData;
     }

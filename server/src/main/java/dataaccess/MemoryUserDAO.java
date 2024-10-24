@@ -7,7 +7,7 @@ import model.UserData;
 import java.util.HashMap;
 
 public class MemoryUserDAO implements UserDAO{
-    final private HashMap<String, UserData> UserMap = new HashMap<>();
+    final private static HashMap<String, UserData> UserMap = new HashMap<>();
 
     @Override
     public void createUser(UserData u) throws DataAccessException {

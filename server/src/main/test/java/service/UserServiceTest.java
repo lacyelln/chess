@@ -9,7 +9,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class UserServiceTest {
     private final UserDAO mUser = new MemoryUserDAO();
     private final AuthDAO mAuth = new MemoryAuthDAO();
-    userservice service = new userservice(mUser, mAuth);
+    UserService service = new UserService(mUser, mAuth);
 
     @Test
     void registerSuccess() throws DataAccessException {

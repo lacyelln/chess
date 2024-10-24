@@ -1,9 +1,7 @@
 package server;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import model.GameData;
-import service.userservice;
-import service.gameservice;
+import service.UserService;
+import service.GameService;
 import com.google.gson.Gson;
 import dataaccess.*;
 import model.AuthData;
@@ -17,8 +15,8 @@ public class Server {
     private final MemoryAuthDAO authDAO = new MemoryAuthDAO();
     private final MemoryGameDAO gameDAO = new MemoryGameDAO();
     private final MemoryUserDAO userDAO = new MemoryUserDAO();
-    private final gameservice gameService = new gameservice(authDAO, gameDAO);
-    private final userservice userService = new userservice(userDAO, authDAO);
+    private final GameService gameService = new GameService(authDAO, gameDAO);
+    private final UserService userService = new UserService(userDAO, authDAO);
     private final Gson serializer = new Gson();
 
     public int run(int desiredPort) {

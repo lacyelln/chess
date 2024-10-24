@@ -61,20 +61,20 @@ public class ChessGame {
             return null;
         }
         else{
-            ChessPiece current_piece = chessBoard.getPiece(startPosition);
-            TeamColor myColor = current_piece.getTeamColor();
-            Collection<ChessMove> possibleList = current_piece.pieceMoves(chessBoard, startPosition);
+            ChessPiece currentPiece = chessBoard.getPiece(startPosition);
+            TeamColor myColor = currentPiece.getTeamColor();
+            Collection<ChessMove> possibleList = currentPiece.pieceMoves(chessBoard, startPosition);
             for(ChessMove possibles : possibleList){
                 ChessPiece endPiece = null;
                 if(chessBoard.getPiece(possibles.getEndPosition())!= null){
                     endPiece = chessBoard.getPiece(possibles.getEndPosition());
                 }
                 chessBoard.removePiece(startPosition);
-                chessBoard.addPiece(possibles.getEndPosition(), current_piece);
+                chessBoard.addPiece(possibles.getEndPosition(), currentPiece);
                 if(!isInCheck(myColor)){
                     validMoves.add(possibles);
                 }
-                chessBoard.addPiece(startPosition, current_piece);
+                chessBoard.addPiece(startPosition, currentPiece);
                 chessBoard.addPiece(possibles.getEndPosition(), endPiece);
             }
         }

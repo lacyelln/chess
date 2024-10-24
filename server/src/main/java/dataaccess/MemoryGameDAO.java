@@ -8,7 +8,7 @@ import java.util.HashMap;
 import java.util.Random;
 
 public class MemoryGameDAO implements GameDAO{
-    final private HashMap<Integer, GameData> GameMap = new HashMap<>();
+    final private static HashMap<Integer, GameData> GameMap = new HashMap<>();
 
     @Override
     public GameData createGame(String g) throws DataAccessException {

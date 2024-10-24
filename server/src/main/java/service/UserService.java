@@ -8,12 +8,12 @@ import model.UserData;
 import java.util.Objects;
 
 
-public class userservice {
+public class UserService {
 
     private final UserDAO uData;
     private final AuthDAO aData;
 
-    public userservice(UserDAO uData, AuthDAO aData){
+    public UserService(UserDAO uData, AuthDAO aData){
         this.uData = uData;
         this.aData = aData;
     }
