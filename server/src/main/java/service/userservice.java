@@ -1,20 +1,19 @@
-package Service;
+package service;
 
 
 import dataaccess.*;
 import model.AuthData;
 import model.UserData;
 
-import java.util.HashMap;
 import java.util.Objects;
 
 
-public class UserService {
+public class userservice {
 
     private final UserDAO uData;
     private final AuthDAO aData;
 
-    public UserService(UserDAO uData, AuthDAO aData){
+    public userservice(UserDAO uData, AuthDAO aData){
         this.uData = uData;
         this.aData = aData;
     }
@@ -42,13 +41,11 @@ public class UserService {
         }
         return aData.createAuth(user.username());
     }
-    public HashMap<String, String> logout(String authToken) throws DataAccessException {
-
+    public void logout(String authToken) throws DataAccessException, UnauthorizedException {
         if(aData.getAuth(authToken) == null){
-            throw new DataAccessException("Error: unauthorized");
+            throw new UnauthorizedException();
         }
         aData.deleteAuth(authToken);
-        return new HashMap<>();
     }
 
     public void delete() throws DataAccessException{

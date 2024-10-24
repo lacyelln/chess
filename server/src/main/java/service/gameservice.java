@@ -1,31 +1,29 @@
-package Service;
+package service;
 
 import dataaccess.*;
-import model.AuthData;
 import model.GameData;
-import model.UserData;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
-public class GameService {
+public class gameservice {
 
     private final AuthDAO aData;
     private final GameDAO gData;
 
-    public GameService(AuthDAO aData, GameDAO gData){
+    public gameservice(AuthDAO aData, GameDAO gData){
         this.aData = aData;
         this.gData = gData;
     }
 
-    public GameData createGame(String authToken, GameData game) throws DataAccessException, UnauthorizedException, BadRequestException{
+    public GameData createGame(String authToken, String gameName) throws DataAccessException, UnauthorizedException, BadRequestException{
         if(aData.getAuth(authToken) == null){
             throw new UnauthorizedException();
         }
-        if(gData.createGame(game) == null){
+        GameData gameId = gData.createGame(gameName);
+        if(gameId == null | gameName == null){
             throw new BadRequestException();
         }
-        return gData.createGame(game);
+        return gameId;
     }
 
     public ArrayList<GameData> listGames(String authToken) throws DataAccessException, UnauthorizedException{
@@ -39,9 +37,13 @@ public class GameService {
         if(aData.getAuth(authToken) == null){
             throw new UnauthorizedException();
         }
-        if(gData.getGame(game) == 0){
+        if(game.gameName() == null){
             throw new BadRequestException();
         }
+        if(gData.getGame(game.gameName()) == null){
+            throw new AlreadyTakenException();
+        }
+
         gData.updateGame(game);
     }
 

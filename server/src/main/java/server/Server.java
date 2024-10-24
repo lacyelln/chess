@@ -1,20 +1,24 @@
 package server;
-import Service.UserService;
-import Service.GameService;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import model.GameData;
+import service.userservice;
+import service.gameservice;
 import com.google.gson.Gson;
 import dataaccess.*;
 import model.AuthData;
 import model.UserData;
 import spark.*;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 public class Server {
     private final MemoryAuthDAO authDAO = new MemoryAuthDAO();
     private final MemoryGameDAO gameDAO = new MemoryGameDAO();
     private final MemoryUserDAO userDAO = new MemoryUserDAO();
-    private final GameService gameService = new GameService(authDAO, gameDAO);
-    private final UserService userService = new UserService(userDAO, authDAO);
+    private final gameservice gameService = new gameservice(authDAO, gameDAO);
+    private final userservice userService = new userservice(userDAO, authDAO);
     private final Gson serializer = new Gson();
 
     public int run(int desiredPort) {
@@ -25,9 +29,9 @@ public class Server {
         Spark.delete("/db", this::delete);
         Spark.post("/session", this::login);
         Spark.delete("/session", this::logout);
-//        Spark.get("/game", this::listGames);
-//        Spark.post("/game", this::createGame);
-//        Spark.put("/game", this::joinGame);
+        Spark.get("/game", this::listGames);
+        Spark.post("/game", this::createGame);
+        Spark.put("/game", this::joinGame);
 
 
         // Register your endpoints and handle exceptions here.
@@ -63,9 +67,14 @@ public class Server {
         return serializer.toJson(auth);
     }
 
-    public Object delete(Request req, Response res) throws DataAccessException {
-        gameService.delete();
-        userService.delete();
+    public Object delete(Request req, Response res)  {
+        try {
+            gameService.delete();
+            userService.delete();
+        }
+        catch (DataAccessException e){
+            Spark.halt(500, "{\"message\"Error: " + e.getMessage() + "\"})");
+        }
         return serializer.toJson(new HashMap<>());
     }
 
@@ -84,10 +93,79 @@ public class Server {
         return serializer.toJson(authData);
     }
 
-    public Object logout(Request req, Response res) throws DataAccessException{
+    public Object logout(Request req, Response res) {
         String authToken = req.headers("authorization");
-        var result = userService.logout(authToken);
-        return serializer.toJson(result);
+        try {
+            userService.logout(authToken);
+        } catch (UnauthorizedException e) {
+            Spark.halt(401, serializer.toJson(new GenericError("Error: unauthorized")));
+        }
+        catch (DataAccessException e){
+            Spark.halt(500, "{\"message\": \"Error:\"" + e.getMessage() + "\"})");
+        }
+        return serializer.toJson(new HashMap<>());
     }
 
+    public Object createGame(Request req, Response res) {
+        String authToken = req.headers("authorization");
+        String gameName = req.body();
+        GameData gameID = new GameData(0, null, null, gameName, null);
+        try {
+            gameID = gameService.createGame(authToken, gameName);
+        }
+        catch (UnauthorizedException e){
+            Spark.halt(401, serializer.toJson(new GenericError("Error: unauthorized")));
+        }
+        catch (BadRequestException e){
+            Spark.halt(400, serializer.toJson(new GenericError("Error: bad request")));
+        }
+        catch (DataAccessException e) {
+            Spark.halt(500, "{\"message\": \"Error:\"" + e.getMessage() + "\"})");
+        }
+        return serializer.toJson(gameID);
+    }
+
+    public Object joinGame(Request req, Response res){
+        String authToken = req.headers("authorization");
+        String playerColor = req.body();
+        //int gameID = req.body();
+        GameData game = new GameData(1, null, null, null, null);
+//        if (Objects.equals(playerColor, "WHITE")){
+//            game = new GameData(intGameId, playerColor, null, null, null);
+//        }
+//        if (Objects.equals(playerColor, "BLACK")){
+//            game = new GameData(intGameId, null, playerColor, null, null);
+//        }
+        try{
+            gameService.joinGame(authToken, game);
+        }
+        catch(DataAccessException e){
+            Spark.halt(500, "{\"message\": \"Error:\"" + e.getMessage() + "\"})");
+        }
+        catch(UnauthorizedException e){
+            Spark.halt(401, serializer.toJson(new GenericError("Error: unauthorized")));
+        }
+        catch (BadRequestException e){
+            Spark.halt(400, serializer.toJson(new GenericError("Error: bad request")));
+        }
+        catch (AlreadyTakenException e){
+            Spark.halt(403, serializer.toJson(new GenericError("Error: already taken")));
+        }
+        return serializer.toJson(new HashMap<>());
+    }
+
+    public Object listGames(Request req, Response res){
+        String authToken = req.headers("authorization");
+        ArrayList<GameData> listOfGames = null;
+        try {
+            listOfGames = gameService.listGames(authToken);
+        }
+        catch (DataAccessException e){
+            Spark.halt(500, "{\"message\": \"Error:\"" + e.getMessage() + "\"})");
+        }
+        catch (UnauthorizedException e){
+            Spark.halt(401, serializer.toJson(new GenericError("Error: unauthorized")));
+        }
+        return serializer.toJson(listOfGames);
+    }
 }

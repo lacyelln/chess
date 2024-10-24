@@ -5,33 +5,40 @@ import model.GameData;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Random;
 
 public class MemoryGameDAO implements GameDAO{
     final private HashMap<Integer, GameData> GameMap = new HashMap<>();
 
     @Override
-    public GameData createGame(GameData g) throws DataAccessException {
-        GameData newGame = new GameData(g.GameID(), g.whiteUsername(), g.blackUsername(), g.gameName(), g.game());
+    public GameData createGame(String g) throws DataAccessException {
+        GameData newGame;
         for (HashMap.Entry<Integer, GameData> entry : GameMap.entrySet()) {
-            if (entry.getValue().gameName().equals(g.gameName())) {
+            if (entry.getValue().gameName().equals(g)) {
                 if (GameMap.containsKey(entry.getKey())) {
                     return null;
                 }
-                GameMap.put(entry.getKey(), newGame);
             }
         }
+        int randomNumber = MemoryGameDAO.generateRandomNumber(1, 1000);
+        newGame = new GameData(randomNumber, null, null, g, new ChessGame());
+        GameMap.put(newGame.GameID(), newGame);
         return newGame;
+    }
+    public static int generateRandomNumber(int min, int max) {
+        Random random = new Random();
+        return random.nextInt((max - min) + 1) + min;
     }
 
 
     @Override
-    public int getGame(GameData g) throws DataAccessException {
+    public GameData getGame(String gameName) throws DataAccessException {
         for (HashMap.Entry<Integer, GameData> entry : GameMap.entrySet()){
-            if(entry.getValue().gameName().equals(g.gameName())){
-                return entry.getKey();
+            if(entry.getValue().gameName().equals(gameName)){
+                return GameMap.get(entry.getKey());
             }
         }
-        return 0;
+        return null;
     }
 
     @Override
@@ -52,15 +59,6 @@ public class MemoryGameDAO implements GameDAO{
         if(GameMap.containsKey(g.GameID())){
             GameData updatedData = new GameData(g.GameID(), g.whiteUsername(), g.blackUsername(), g.gameName(), updateGame);
             GameMap.put(g.GameID(), updatedData);
-        }
-    }
-
-    @Override
-    public void deleteGame(GameData g) throws DataAccessException {
-        for (HashMap.Entry<Integer, GameData> entry : GameMap.entrySet()){
-            if(entry.getValue().GameID() == g.GameID()){
-                GameMap.remove(entry.getKey(), g);
-            }
         }
     }
 

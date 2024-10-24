@@ -1,29 +1,25 @@
-package Service;
+package service;
 
 import dataaccess.*;
 import model.UserData;
-import org.eclipse.jetty.server.Authentication;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-
-import java.util.HashMap;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class UserServiceTest {
     private final UserDAO mUser = new MemoryUserDAO();
     private final AuthDAO mAuth = new MemoryAuthDAO();
-    UserService service = new UserService(mUser, mAuth);
+    userservice service = new userservice(mUser, mAuth);
 
     @Test
-    void register_success() throws DataAccessException {
+    void registerSuccess() throws DataAccessException {
         var user = new UserData("a", "a", "a");
         var authData = service.register(user);
         assertEquals(user.username(), authData.username());
     }
 
     @Test
-    void register_failed() throws DataAccessException{
+    void registerFailed() throws DataAccessException{
         var user = new UserData("", null, "a");
         var bool = true;
         try {
@@ -36,7 +32,7 @@ class UserServiceTest {
     }
 
     @Test
-    void login_success() throws DataAccessException, UnauthorizedException{
+    void loginSuccess() throws DataAccessException, UnauthorizedException{
         var user = new UserData("a", "a", "a");
         service.register(user);
         var userData = service.login(user);
@@ -44,7 +40,7 @@ class UserServiceTest {
     }
 
     @Test
-    void login_failed() throws DataAccessException {
+    void loginFailed() throws DataAccessException {
         var user = new UserData("a", "a", "a");
         var result = true;
         try {
@@ -57,15 +53,34 @@ class UserServiceTest {
     }
 
     @Test
-    void logout_success() throws DataAccessException{
+    void logoutSuccess() throws DataAccessException{
         var user = new UserData("a", "a", "a");
         var authData = service.register(user);
-        var result = service.logout(authData.authToken());
-        assertEquals(new HashMap<>(), result);
+        String result = "";
+        try {
+            service.logout(authData.authToken());
+            result = "{}";
+        }
+        catch (UnauthorizedException e){
+            result = "wrong";
+        }
+        assertEquals("{}", result);
     }
 
     @Test
-    void logout_failed(){
+    void logoutFailed() throws DataAccessException, UnauthorizedException{
+        var user = new UserData("a", "a", "a");
+        var authData = service.register(user);
+        mAuth.deleteAuth(authData.authToken());
+        String result = "";
+        try {
+            service.logout(authData.authToken());
+            result = "{}";
+        }
+        catch (UnauthorizedException e){
+            result = "caught";
+        }
+        assertEquals("caught", result);
 
     }
 }
