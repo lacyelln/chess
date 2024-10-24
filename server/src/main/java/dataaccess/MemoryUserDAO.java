@@ -23,12 +23,6 @@ public class MemoryUserDAO implements UserDAO{
         return null;
     }
 
-    @Override
-    public void deleteUser(UserData u) throws DataAccessException {
-        if(USER_MAP.containsKey(u.username())) {
-            USER_MAP.remove(u.username(), u);
-        }
-    }
 
     public void deleteAllUsers() throws DataAccessException{
         USER_MAP.clear();
