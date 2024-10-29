@@ -3,6 +3,10 @@ package dataaccess;
 import model.AuthData;
 
 public class MySqlAuthDataAccess implements AuthDAO{
+    public MySqlAuthDataAccess() throws DataAccessException {
+        DatabaseManager.configureDatabase();
+    }
+
     @Override
     public AuthData createAuth(String u) throws DataAccessException {
         return null;

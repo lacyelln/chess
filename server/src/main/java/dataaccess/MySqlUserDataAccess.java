@@ -4,6 +4,10 @@ import model.UserData;
 import org.eclipse.jetty.server.Authentication;
 
 public class MySqlUserDataAccess implements UserDAO {
+    public MySqlUserDataAccess() throws DataAccessException {
+        DatabaseManager.configureDatabase();
+    }
+
     @Override
     public void createUser(UserData u) throws DataAccessException {
 

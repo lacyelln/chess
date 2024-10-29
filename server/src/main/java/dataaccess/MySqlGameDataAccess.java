@@ -5,6 +5,10 @@ import model.GameData;
 import java.util.ArrayList;
 
 public class MySqlGameDataAccess implements GameDAO{
+    public MySqlGameDataAccess() throws DataAccessException {
+        DatabaseManager.configureDatabase();
+    }
+
     @Override
     public GameData createGame(String g) throws DataAccessException {
         return null;
