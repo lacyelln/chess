@@ -1,9 +1,12 @@
 package dataaccess;
 
+import model.UserData;
 import spark.Spark;
 
 import java.sql.*;
 import java.util.Properties;
+
+import static java.sql.Statement.RETURN_GENERATED_KEYS;
 
 public class DatabaseManager {
     private static final String DATABASE_NAME;
@@ -73,7 +76,7 @@ public class DatabaseManager {
     }
     public static final String[] createStatements = {
             """
-            CREATE TABLE IF NOT EXISTS  pet (
+            CREATE TABLE IF NOT EXISTS  user (
               `id` int NOT NULL AUTO_INCREMENT,
               `name` varchar(256) NOT NULL,
               `type` ENUM('CAT', 'DOG', 'FISH', 'FROG', 'ROCK') DEFAULT 'CAT',
@@ -97,4 +100,5 @@ public class DatabaseManager {
             throw Spark.halt(500, "{\"message\": \"Error: " + e.getMessage() + "\"}");
         }
     }
+
 }
