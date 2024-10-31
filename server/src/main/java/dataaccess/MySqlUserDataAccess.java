@@ -39,22 +39,22 @@ public class MySqlUserDataAccess implements UserDAO {
         executeUpdate(statement, u.username(), u.password(), u.email());
     }
 
-    @Override
     public UserData getUser(UserData u) throws DataAccessException {
         try (var conn = DatabaseManager.getConnection()) {
-            var statement = "SELECT username, password, email, json FROM user WHERE username=?";
+            var statement = "SELECT username, password, email FROM user WHERE username=?";
             try (var ps = conn.prepareStatement(statement)) {
                 ps.setString(1, u.username());
                 try (var rs = ps.executeQuery()) {
                     if (rs.next()) {
-                        String userJson = rs.getString("json");
-                        return new Gson().fromJson(userJson, UserData.class);
-
+                        String username = rs.getString("username");
+                        String password = rs.getString("password");
+                        String email = rs.getString("email");
+                        return new UserData(username, password, email); // Create UserData with retrieved fields
                     }
                 }
             }
-        } catch (Exception e) {
-            throw Spark.halt(500, "{\"message\": \"Error: " + e.getMessage() + "\"}");
+        } catch (SQLException e) {
+            throw new DataAccessException("Error retrieving user: " + e.getMessage());
         }
         return null;
     }
