@@ -39,12 +39,17 @@ class MySqlUserDataAccessTest {
     }
 
     @Test
-    void createUserTestFail() throws DataAccessException {
-        assertThrows(DataAccessException.class, () -> {
-            dataAccess.createUser(tryUser);
-        }, "Empty password");
-        assertFalse(dataAccess.userExists("b"), "Should not exist.");
+    void createUserTestFail() {
+        try {
+            assertThrows(DataAccessException.class, () -> dataAccess.createUser(new UserData("a", "", "c")),
+                    "No password");
+            assertFalse(dataAccess.userExists("a"), "User isn't added.");
+
+        } catch (DataAccessException e) {
+            throw Spark.halt(500, "{\"message\": \"Error: " + e.getMessage() + "\"}");
+        }
     }
+
 
     @Test
     void getUserTestSuccess()  {
@@ -66,6 +71,20 @@ class MySqlUserDataAccessTest {
             throw Spark.halt(500, "{\"message\": \"Error: " + e.getMessage() + "\"}");
         }
     }
+
+    @Test
+    void deleteUserTest() {
+        try {
+            assertDoesNotThrow(() -> dataAccess.createUser(tryUser));
+            assertTrue(dataAccess.userExists(tryUser.username()), "User exists.");
+            dataAccess.deleteAllUsers();
+            assertFalse(dataAccess.userExists(tryUser.username()), "No longer exists.");
+            assertDoesNotThrow(() -> dataAccess.deleteAllUsers());
+        } catch (DataAccessException e) {
+            throw Spark.halt(500, "{\"message\": \"Error: " + e.getMessage() + "\"}");
+        }
+    }
+
 
 
 }
