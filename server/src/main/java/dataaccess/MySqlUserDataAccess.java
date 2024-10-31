@@ -2,7 +2,6 @@ package dataaccess;
 
 import com.google.gson.Gson;
 import model.UserData;
-import org.eclipse.jetty.server.Authentication;
 import spark.Spark;
 
 import java.sql.SQLException;
@@ -14,12 +13,30 @@ public class MySqlUserDataAccess implements UserDAO {
     public MySqlUserDataAccess() throws DataAccessException {
         DatabaseManager.configureDatabase();
     }
+    public boolean userExists(String username) throws DataAccessException {
+        var query = "SELECT COUNT(*) FROM user WHERE username = ?";
+        try (var conn = DatabaseManager.getConnection();
+             var ps = conn.prepareStatement(query)) {
+            ps.setString(1, username);
+            try (var rs = ps.executeQuery()) {
+                return rs.next() && rs.getInt(1) > 0;
+            }
+        } catch (SQLException y) {
+            throw new DataAccessException("Error checking if user exists: " + y.getMessage());
+        }
+    }
 
     @Override
     public void createUser(UserData u) throws DataAccessException {
-        var statement = "INSERT INTO user (username, password, email, json) VALUES (?, ?, ?, ?)";
+        if (userExists(u.username())) {
+            throw new DataAccessException("User with username '" + u.username() + "' already exists.");
+        }
+        if (u.password() == null || u.password().isEmpty() || u.username() == null || u.username().isEmpty()) {
+            throw new DataAccessException("Password cannot be empty or null.");
+        }
+        var statement = "INSERT INTO user (username, password, email) VALUES (?, ?, ?)";
         var json = new Gson().toJson(u);
-        executeUpdate(statement, u.username(), u.password(), u.email(), json);
+        executeUpdate(statement, u.username(), u.password(), u.email());
     }
 
     @Override
@@ -44,10 +61,12 @@ public class MySqlUserDataAccess implements UserDAO {
 
     @Override
     public void deleteAllUsers() throws DataAccessException {
+        var statement = "DELETE FROM user";
+        executeUpdate(statement);
 
     }
 
-    public int executeUpdate(String statement, Object... params) throws DataAccessException {
+    public void executeUpdate(String statement, Object... params) throws DataAccessException {
         try (var conn = DatabaseManager.getConnection()) {
             try (var ps = conn.prepareStatement(statement, RETURN_GENERATED_KEYS)) {
                 for (var i = 0; i < params.length; i++) {
@@ -61,10 +80,9 @@ public class MySqlUserDataAccess implements UserDAO {
 
                 var rs = ps.getGeneratedKeys();
                 if (rs.next()) {
-                    return rs.getInt(1);
+                    rs.getInt(1);
                 }
 
-                return 0;
             }
         } catch (SQLException e) {
             throw Spark.halt(500, "{\"message\": \"Error: " + e.getMessage() + "\"}");

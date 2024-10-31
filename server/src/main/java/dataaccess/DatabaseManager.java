@@ -77,13 +77,34 @@ public class DatabaseManager {
     public static final String[] createStatements = {
             """
             CREATE TABLE IF NOT EXISTS  user (
-              `id` int NOT NULL AUTO_INCREMENT,
-              `name` varchar(256) NOT NULL,
-              `type` ENUM('CAT', 'DOG', 'FISH', 'FROG', 'ROCK') DEFAULT 'CAT',
+              `username` varchar(256) NOT NULL,
+              `password` varchar(256) NOT NULL,
+              `email` varchar(256),
+              PRIMARY KEY (`username`),
+              INDEX(password),
+              INDEX(email)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
+            """,
+            """
+            CREATE TABLE IF NOT EXISTS  game (
+              `gameID` int NOT NULL,
+              `whiteUsername` varchar(256),
+              `blackUsername` varchar(256),
+              `gameName` varchar(256),
               `json` TEXT DEFAULT NULL,
-              PRIMARY KEY (`id`),
-              INDEX(type),
-              INDEX(name)
+              PRIMARY KEY (`gameID`),
+              INDEX(whiteUsername),
+              INDEX(blackUsername),
+              INDEX(gameName)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
+            """,
+            """
+            CREATE TABLE IF NOT EXISTS  auth (
+              `authToken` varchar(256) NOT NULL,
+              `username` varchar(256),
+              `json` TEXT DEFAULT NULL,
+              PRIMARY KEY (`authToken`),
+              INDEX(username)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
             """
     };
