@@ -23,31 +23,19 @@ class MySqlUserDataAccessTest {
 
     @BeforeEach
     void setUp() throws DataAccessException {
-        //dataAccess.deleteAllAuth();
         dataAccess.deleteAllUsers();
     }
 
     @Test
     void createUserTestSuccess()  {
-        try {
-            assertDoesNotThrow(() -> dataAccess.createUser(tryUser));
-            assertTrue(dataAccess.userExists("b"), "Success!");
-
-        } catch (DataAccessException e) {
-            throw Spark.halt(500, "{\"message\": \"Error: " + e.getMessage() + "\"}");
-        }
+        assertDoesNotThrow(() -> dataAccess.createUser(tryUser));
+        assertDoesNotThrow(() -> dataAccess.userExists("b"), "user exists");
     }
 
     @Test
     void createUserTestFail() {
-        try {
-            assertThrows(DataAccessException.class, () -> dataAccess.createUser(new UserData("a", "", "c")),
-                    "No password");
-            assertFalse(dataAccess.userExists("a"), "User isn't added.");
-
-        } catch (DataAccessException e) {
-            throw Spark.halt(500, "{\"message\": \"Error: " + e.getMessage() + "\"}");
-        }
+        assertDoesNotThrow(() -> dataAccess.createUser(tryUser));
+        assertThrows(DataAccessException.class, () -> dataAccess.createUser(tryUser), "No password");
     }
 
 

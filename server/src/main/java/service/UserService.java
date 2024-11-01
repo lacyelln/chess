@@ -4,6 +4,7 @@ package service;
 import dataaccess.*;
 import model.AuthData;
 import model.UserData;
+import org.mindrot.jbcrypt.BCrypt;
 
 import java.util.Objects;
 
@@ -37,6 +38,10 @@ public class UserService {
         }
         UserData userData = uData.getUser(user);
         if (!Objects.equals(userData.password(), user.password())){
+            throw new UnauthorizedException();
+        }
+        String hashedPassword = BCrypt.hashpw(user.password(), BCrypt.gensalt());
+        if (!Objects.equals(userData.password(), hashedPassword)){
             throw new UnauthorizedException();
         }
         return aData.createAuth(user.username());

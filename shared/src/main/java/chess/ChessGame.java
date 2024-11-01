@@ -213,4 +213,17 @@ public class ChessGame {
     public ChessBoard getBoard() {
         return this.chessBoard;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {return true;}
+        if (o == null || getClass() != o.getClass()) {return false;}
+        ChessGame chessGame = (ChessGame) o;
+        return team == chessGame.team && Objects.equals(chessBoard, chessGame.chessBoard);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(team, chessBoard);
+    }
 }
