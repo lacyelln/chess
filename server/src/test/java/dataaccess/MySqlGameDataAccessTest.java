@@ -18,13 +18,8 @@ class MySqlGameDataAccessTest {
     UserData user = new UserData("tacos", "password", "e");
 
     MySqlGameDataAccessTest() {
-        try {
-            dataAccessG = new MySqlGameDataAccess();
-            dataAccessU = new MySqlUserDataAccess();
-        }
-        catch (DataAccessException e){
-            throw Spark.halt(500, "{\"message\": \"Error: " + e.getMessage() + "\"}");
-        }
+        dataAccessG = new MySqlGameDataAccess();
+        dataAccessU = new MySqlUserDataAccess();
     }
 
     @BeforeEach

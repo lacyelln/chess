@@ -11,7 +11,7 @@ import static java.sql.Types.NULL;
 import static java.sql.Statement.RETURN_GENERATED_KEYS;
 
 public class MySqlUserDataAccess implements UserDAO {
-    public MySqlUserDataAccess() throws DataAccessException {
+    public MySqlUserDataAccess() {
         DatabaseManager.configureDatabase();
     }
     public boolean userExists(String username) throws DataAccessException {
@@ -32,14 +32,14 @@ public class MySqlUserDataAccess implements UserDAO {
     @Override
     public void createUser(UserData u) throws DataAccessException {
         if (userExists(u.username())) {
-            throw new DataAccessException("User with username '" + u.username() + "' already exists.");
+            throw new AlreadyTakenException();
         }
         if (u.password() == null || u.password().isEmpty() || u.username() == null || u.username().isEmpty()) {
             throw new DataAccessException("Username/password cannot be empty or null.");
         }
-        String hashedPassword = BCrypt.hashpw(u.password(), BCrypt.gensalt());
+//        String hashedPassword = BCrypt.hashpw(u.password(), BCrypt.gensalt());
         var statement = "INSERT INTO user (username, password, email) VALUES (?, ?, ?)";
-        executeUpdate(statement, u.username(), hashedPassword, u.email());
+        executeUpdate(statement, u.username(), u.password(), u.email());
     }
 
     public UserData getUser(String u) throws DataAccessException {

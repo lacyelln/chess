@@ -13,12 +13,7 @@ class MySqlUserDataAccessTest {
     UserData tryUser = new UserData("b", "d", "e");
 
     MySqlUserDataAccessTest() {
-        try {
-            dataAccess = new MySqlUserDataAccess();
-        }
-        catch (DataAccessException e){
-            throw Spark.halt(500, "{\"message\": \"Error: " + e.getMessage() + "\"}");
-        }
+        dataAccess = new MySqlUserDataAccess();
     }
 
     @BeforeEach
@@ -43,7 +38,7 @@ class MySqlUserDataAccessTest {
     void getUserTestSuccess()  {
         try {
             assertDoesNotThrow(() -> dataAccess.createUser(tryUser));
-            assertEquals(dataAccess.getUser(tryUser.username()), tryUser);
+            assertEquals(dataAccess.getUser(tryUser.username()).username(), tryUser.username());
 
         } catch (DataAccessException e) {
             throw Spark.halt(500, "{\"message\": \"Error: " + e.getMessage() + "\"}");

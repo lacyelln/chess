@@ -14,7 +14,7 @@ import static java.sql.Statement.RETURN_GENERATED_KEYS;
 import static java.sql.Types.NULL;
 
 public class MySqlGameDataAccess implements GameDAO{
-    public MySqlGameDataAccess() throws DataAccessException {
+    public MySqlGameDataAccess() {
         DatabaseManager.configureDatabase();
     }
 
@@ -46,20 +46,20 @@ public class MySqlGameDataAccess implements GameDAO{
     @Override
     public GameData createGame(String g) throws DataAccessException {
         if(gameExists(g)){
-            throw new DataAccessException("Game with gameName '" + g + "' already exists.");
+            throw new AlreadyTakenException();
         }
         var statement = "INSERT INTO game (gameID, whiteUsername, blackUsername, gameName, json) VALUES (?, ?, ?, ?, ?)";
         ChessGame game = new ChessGame();
         var json = new Gson().toJson(game);
         int gameID = MemoryGameDAO.generateRandomNumber(1, 1000);
-        executeUpdate(statement, gameID, NULL, NULL, g, json);
+        executeUpdate(statement, gameID, null, null, g, json);
         return getGame(gameID);
     }
 
     @Override
     public GameData getGame(Integer g) throws DataAccessException {
         if(!gameIdExists(g)){
-            throw new DataAccessException("Game with gameName '" + g + "' already exists.");
+            throw new AlreadyTakenException();
         }
         try (var conn = DatabaseManager.getConnection()) {
             var statement = "SELECT gameID, whiteUsername, blackUsername, gameName, json FROM game WHERE gameID=?";
@@ -117,7 +117,7 @@ public class MySqlGameDataAccess implements GameDAO{
         GameData currentGame = getGame(g);
         String statement;
         if (Objects.equals(p, "WHITE")){
-            if (currentGame.whiteUsername() != null){
+            if (currentGame.whiteUsername() == null){
                 statement = "UPDATE game SET whiteUsername = ? WHERE gameID = ?";
             }
             else{
@@ -125,7 +125,7 @@ public class MySqlGameDataAccess implements GameDAO{
             }
         }
         else if (Objects.equals(p, "BLACK")) {
-            if (currentGame.blackUsername() != null) {
+            if (currentGame.blackUsername() == null) {
                 statement = "UPDATE game SET blackUsername = ? WHERE gameID = ?";
             }
             else{

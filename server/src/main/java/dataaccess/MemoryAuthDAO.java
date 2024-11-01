@@ -23,7 +23,7 @@ public class MemoryAuthDAO implements AuthDAO{
 
 
     @Override
-    public AuthData getAuth(String authToken) throws DataAccessException {
+    public AuthData getAuth(String authToken)  {
         for (HashMap.Entry<String, AuthData> entry : AUTH_MAP.entrySet()){
             if(entry.getValue().authToken().equals(authToken)){
                 return entry.getValue();

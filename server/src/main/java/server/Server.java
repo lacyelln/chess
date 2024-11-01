@@ -1,4 +1,6 @@
 package server;
+
+import com.google.gson.JsonParser;
 import model.GameData;
 import service.UserService;
 import service.GameService;
@@ -13,9 +15,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Server {
-    private final MemoryAuthDAO authDAO = new MemoryAuthDAO();
-    private final MemoryGameDAO gameDAO = new MemoryGameDAO();
-    private final MemoryUserDAO userDAO = new MemoryUserDAO();
+    private final AuthDAO authDAO = new MySqlAuthDataAccess();
+    private final GameDAO gameDAO = new MySqlGameDataAccess();
+    private final UserDAO userDAO = new MySqlUserDataAccess();
     private final GameService gameService = new GameService(authDAO, gameDAO);
     private final UserService userService = new UserService(userDAO, authDAO);
     private final Gson serializer = new Gson();
@@ -72,7 +74,7 @@ public class Server {
             userService.delete();
         }
         catch (DataAccessException e){
-            Spark.halt(500, "{\"message\"Error: " + e.getMessage() + "\"})");
+            Spark.halt(500, "{\"message\": \"Error: " + e.getMessage() + "\"})");
         }
         return serializer.toJson(new HashMap<>());
     }
@@ -100,14 +102,14 @@ public class Server {
             Spark.halt(401, serializer.toJson(new GenericError("Error: unauthorized")));
         }
         catch (DataAccessException e){
-            Spark.halt(500, "{\"message\": \"Error:\"" + e.getMessage() + "\"})");
+            Spark.halt(500, "{\"message\": \"Error:" + e.getMessage() + "\"}");
         }
         return serializer.toJson(new HashMap<>());
     }
 
     public Object createGame(Request req, Response res) {
         String authToken = req.headers("authorization");
-        String gameName = req.body();
+        String gameName = JsonParser.parseString(req.body()).getAsJsonObject().get("gameName").getAsString();
         GameData gameID = null;
         try {
             gameID = gameService.createGame(authToken, gameName);

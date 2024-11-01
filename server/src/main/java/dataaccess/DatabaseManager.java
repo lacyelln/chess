@@ -79,7 +79,7 @@ public class DatabaseManager {
             CREATE TABLE IF NOT EXISTS  user (
               `username` varchar(256) NOT NULL,
               `password` varchar(256) NOT NULL,
-              `email` varchar(256),
+              `email` varchar(256) NOT NULL,
               PRIMARY KEY (`username`),
               INDEX(password),
               INDEX(email)
@@ -101,20 +101,21 @@ public class DatabaseManager {
             """
             CREATE TABLE IF NOT EXISTS  auth (
               `authToken` varchar(256) NOT NULL,
-              `username` varchar(256),
-              `json` TEXT DEFAULT NULL,
+              `username` varchar(256) NOT NULL,
               PRIMARY KEY (`authToken`),
               INDEX(username)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
             """
     };
 
-     static void configureDatabase() throws DataAccessException {
-        DatabaseManager.createDatabase();
-        try (var conn = DatabaseManager.getConnection()) {
-            for (var statement : CREATE_STATEMENTS) {
-                try (var preparedStatement = conn.prepareStatement(statement)) {
-                    preparedStatement.executeUpdate();
+     static void configureDatabase() {
+        try {
+            DatabaseManager.createDatabase();
+            try (var conn = DatabaseManager.getConnection()) {
+                for (var statement : CREATE_STATEMENTS) {
+                    try (var preparedStatement = conn.prepareStatement(statement)) {
+                        preparedStatement.executeUpdate();
+                    }
                 }
             }
         } catch (DataAccessException | SQLException e) {

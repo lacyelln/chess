@@ -4,6 +4,7 @@ package service;
 import dataaccess.*;
 import model.AuthData;
 import model.UserData;
+import org.eclipse.jetty.server.Authentication;
 import org.mindrot.jbcrypt.BCrypt;
 
 import java.util.Objects;
@@ -26,10 +27,17 @@ public class UserService {
         if (Objects.equals(user.password(), "") | user.password() == null){
             throw new BadRequestException();
         }
+        if (Objects.equals(user.email(), "") | user.email() == null) {
+            throw new BadRequestException();
+        }
         if(uData.getUser(user.username()) != null){
             throw new AlreadyTakenException();
         }
-        uData.createUser(user);
+        UserData newUser = new UserData(
+                user.username(),
+                BCrypt.hashpw(user.password(), BCrypt.gensalt()),
+                user.email());
+        uData.createUser(newUser);
         return aData.createAuth(user.username());
     }
     public AuthData login(UserData user) throws UnauthorizedException, DataAccessException {
@@ -37,11 +45,7 @@ public class UserService {
             throw new UnauthorizedException();
         }
         UserData userData = uData.getUser(user.username());
-        if (!Objects.equals(userData.password(), user.password())){
-            throw new UnauthorizedException();
-        }
-        String hashedPassword = BCrypt.hashpw(user.password(), BCrypt.gensalt());
-        if (!Objects.equals(userData.password(), hashedPassword)){
+        if (!BCrypt.checkpw(user.password(), userData.password())){
             throw new UnauthorizedException();
         }
         return aData.createAuth(user.username());
