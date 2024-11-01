@@ -30,7 +30,7 @@ class MySqlUserDataAccessTest {
     @Test
     void createUserTestFail() {
         assertDoesNotThrow(() -> dataAccess.createUser(tryUser));
-        assertThrows(DataAccessException.class, () -> dataAccess.createUser(tryUser), "No password");
+        assertThrows(AlreadyTakenException.class, () -> dataAccess.createUser(tryUser), "Already taken");
     }
 
 

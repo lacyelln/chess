@@ -53,11 +53,11 @@ class MySqlAuthDataAccessTest {
 
     @Test
     void getAuthFail() {
-        assertThrows(DataAccessException.class, () -> {
+        assertDoesNotThrow(() -> {
             dataAccessU.createUser(tryUser);
             UserData user = dataAccessU.getUser(tryUser.username());
             dataAccessA.createAuth(user.username());
-            dataAccessA.getAuth("auth.authToken()");
+            assertNull(dataAccessA.getAuth("auth.authToken()"));
         });
     }
 

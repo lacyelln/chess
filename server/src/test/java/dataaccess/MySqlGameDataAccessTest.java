@@ -43,7 +43,7 @@ class MySqlGameDataAccessTest {
     @Test
     void createGameFail(){
         assertDoesNotThrow(()-> dataAccessG.createGame(gameName));
-        assertThrows(DataAccessException.class, () -> dataAccessG.createGame(gameName), "already exists.");
+        assertThrows(AlreadyTakenException.class, () -> dataAccessG.createGame(gameName), "already exists.");
     }
 
     @Test
@@ -57,7 +57,7 @@ class MySqlGameDataAccessTest {
 
     @Test
     void getGameFail() {
-        assertThrows(DataAccessException.class, ()-> dataAccessG.getGame(1234));
+        assertThrows(BadRequestException.class, ()-> dataAccessG.getGame(1234));
     }
 
     @Test

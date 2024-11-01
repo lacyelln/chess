@@ -59,7 +59,7 @@ public class MySqlGameDataAccess implements GameDAO{
     @Override
     public GameData getGame(Integer g) throws DataAccessException {
         if(!gameIdExists(g)){
-            throw new AlreadyTakenException();
+            throw new BadRequestException();
         }
         try (var conn = DatabaseManager.getConnection()) {
             var statement = "SELECT gameID, whiteUsername, blackUsername, gameName, json FROM game WHERE gameID=?";

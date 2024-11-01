@@ -15,8 +15,10 @@ import static java.sql.Statement.RETURN_GENERATED_KEYS;
 import static java.sql.Types.NULL;
 
 public class MySqlAuthDataAccess implements AuthDAO{
+    private UserDAO userDAO;
     public MySqlAuthDataAccess() {
         DatabaseManager.configureDatabase();
+        this.userDAO = new MySqlUserDataAccess();
     }
 
     public boolean authExists(String u) throws DataAccessException {
@@ -34,6 +36,9 @@ public class MySqlAuthDataAccess implements AuthDAO{
 
     @Override
     public AuthData createAuth(String u) throws DataAccessException {
+        if (userDAO.getUser(u) == null) {
+            throw new DataAccessException("User doesn't exits");
+        }
         var statement = "INSERT INTO auth (authToken, username) VALUES (?, ?)";
         String authToken = UUID.randomUUID().toString();
         executeUpdate(statement, authToken, u);
