@@ -13,11 +13,14 @@ import static org.junit.jupiter.api.Assertions.*;
 class MySqlGameDataAccessTest {
 
     MySqlGameDataAccess dataAccessG;
+    MySqlUserDataAccess dataAccessU;
     String gameName = "Try Game";
+    UserData user = new UserData("tacos", "password", "e");
 
     MySqlGameDataAccessTest() {
         try {
             dataAccessG = new MySqlGameDataAccess();
+            dataAccessU = new MySqlUserDataAccess();
         }
         catch (DataAccessException e){
             throw Spark.halt(500, "{\"message\": \"Error: " + e.getMessage() + "\"}");
@@ -27,6 +30,7 @@ class MySqlGameDataAccessTest {
     @BeforeEach
     void setUp() throws DataAccessException {
         dataAccessG.deleteAllGames();
+        dataAccessU.deleteAllUsers();
     }
 
     @Test
@@ -73,16 +77,30 @@ class MySqlGameDataAccessTest {
 
     }
 
-
     @Test
     void updateGameSuccess() {
+        assertDoesNotThrow(()-> {
+            GameData game = dataAccessG.createGame(gameName);
+            dataAccessU.createUser(user);
+            dataAccessG.updateGame(game.gameID(), user.username(), "WHITE");
+            GameData g = dataAccessG.getGame(game.gameID());
+            assertNotEquals(g, game);
+        });
     }
 
     @Test
     void updateGameFail() {
+        GameData game = assertDoesNotThrow(()-> dataAccessG.createGame(gameName));
+        assertThrows(DataAccessException.class, () -> dataAccessG.updateGame(game.gameID(), "Taco", "WHITE"));
     }
 
     @Test
     void deleteAllGames() {
+        assertDoesNotThrow(() ->
+            {dataAccessG.createGame(gameName);
+            assertTrue(dataAccessG.gameExists(gameName), "User exists.");
+            assertDoesNotThrow(() -> dataAccessG.deleteAllGames());
+            assertFalse(dataAccessG.gameExists(gameName), "No longer exists.");
+        });
     }
 }

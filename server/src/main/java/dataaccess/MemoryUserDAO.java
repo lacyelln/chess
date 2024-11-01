@@ -16,9 +16,9 @@ public class MemoryUserDAO implements UserDAO{
 
 
     @Override
-    public UserData getUser(UserData u) throws DataAccessException {
-        if(USER_MAP.containsKey(u.username())){
-            return USER_MAP.get(u.username());
+    public UserData getUser(String u) throws DataAccessException {
+        if(USER_MAP.containsKey(u)){
+            return USER_MAP.get(u);
         }
         return null;
     }

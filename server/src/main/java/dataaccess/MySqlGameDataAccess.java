@@ -8,6 +8,7 @@ import spark.Spark;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Objects;
 
 import static java.sql.Statement.RETURN_GENERATED_KEYS;
 import static java.sql.Types.NULL;
@@ -109,6 +110,42 @@ public class MySqlGameDataAccess implements GameDAO{
 
     @Override
     public void updateGame(Integer g, String u, String p) throws DataAccessException {
+        UserDAO uDao = new MySqlUserDataAccess();
+        if(uDao.getUser(u) == null) {
+            throw new DataAccessException("user not found");
+        }
+        GameData currentGame = getGame(g);
+        String statement;
+        if (Objects.equals(p, "WHITE")){
+            if (currentGame.whiteUsername() != null){
+                statement = "UPDATE game SET whiteUsername = ? WHERE gameID = ?";
+            }
+            else{
+                throw new AlreadyTakenException();
+            }
+        }
+        else if (Objects.equals(p, "BLACK")) {
+            if (currentGame.blackUsername() != null) {
+                statement = "UPDATE game SET blackUsername = ? WHERE gameID = ?";
+            }
+            else{
+                throw new AlreadyTakenException();
+            }
+        }
+        else {
+            throw new DataAccessException("Not a black or white user");
+        }
+        try (var conn = DatabaseManager.getConnection()) {
+            try (var ps = conn.prepareStatement(statement)) {
+                ps.setString(1, u);
+                ps.setInt(2, g);
+                ps.executeUpdate();
+            }
+        } catch (SQLException e) {
+            throw new DataAccessException("Error retrieving game: " + e.getMessage());
+        }
+
+
 
     }
 
@@ -123,10 +160,10 @@ public class MySqlGameDataAccess implements GameDAO{
             try (var ps = conn.prepareStatement(statement, RETURN_GENERATED_KEYS)) {
                 for (var i = 0; i < params.length; i++) {
                     var param = params[i];
-                    if (param instanceof String p) ps.setString(i + 1, p);
-                    else if (param instanceof Integer p) ps.setInt(i + 1, p);
-                    else if (param instanceof GameData p) ps.setString(i + 1, p.toString());
-                    else if (param == null) ps.setNull(i + 1, NULL);
+                    if (param instanceof String p) {ps.setString(i + 1, p);}
+                    else if (param instanceof Integer p) {ps.setInt(i + 1, p);}
+                    else if (param instanceof GameData p) {ps.setString(i + 1, p.toString());}
+                    else if (param == null) {ps.setNull(i + 1, NULL);}
                 }
                 ps.executeUpdate();
 

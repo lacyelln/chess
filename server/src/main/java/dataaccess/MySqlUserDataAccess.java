@@ -42,11 +42,11 @@ public class MySqlUserDataAccess implements UserDAO {
         executeUpdate(statement, u.username(), hashedPassword, u.email());
     }
 
-    public UserData getUser(UserData u) throws DataAccessException {
+    public UserData getUser(String u) throws DataAccessException {
         try (var conn = DatabaseManager.getConnection()) {
             var statement = "SELECT username, password, email FROM user WHERE username=?";
             try (var ps = conn.prepareStatement(statement)) {
-                ps.setString(1, u.username());
+                ps.setString(1, u);
                 try (var rs = ps.executeQuery()) {
                     if (rs.next()) {
                         String username = rs.getString("username");
@@ -74,10 +74,10 @@ public class MySqlUserDataAccess implements UserDAO {
             try (var ps = conn.prepareStatement(statement, RETURN_GENERATED_KEYS)) {
                 for (var i = 0; i < params.length; i++) {
                     var param = params[i];
-                    if (param instanceof String p) ps.setString(i + 1, p);
-                    else if (param instanceof Integer p) ps.setInt(i + 1, p);
-                    else if (param instanceof UserData p) ps.setString(i + 1, p.toString());
-                    else if (param == null) ps.setNull(i + 1, NULL);
+                    if (param instanceof String p) {ps.setString(i + 1, p);}
+                    else if (param instanceof Integer p) {ps.setInt(i + 1, p);}
+                    else if (param instanceof UserData p) {ps.setString(i + 1, p.toString());}
+                    else if (param == null) {ps.setNull(i + 1, NULL);}
                 }
                 ps.executeUpdate();
 

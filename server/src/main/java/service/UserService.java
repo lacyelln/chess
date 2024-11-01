@@ -26,17 +26,17 @@ public class UserService {
         if (Objects.equals(user.password(), "") | user.password() == null){
             throw new BadRequestException();
         }
-        if(uData.getUser(user) != null){
+        if(uData.getUser(user.username()) != null){
             throw new AlreadyTakenException();
         }
         uData.createUser(user);
         return aData.createAuth(user.username());
     }
     public AuthData login(UserData user) throws UnauthorizedException, DataAccessException {
-        if(uData.getUser(user) == null){
+        if(uData.getUser(user.username()) == null){
             throw new UnauthorizedException();
         }
-        UserData userData = uData.getUser(user);
+        UserData userData = uData.getUser(user.username());
         if (!Objects.equals(userData.password(), user.password())){
             throw new UnauthorizedException();
         }
