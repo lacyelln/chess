@@ -10,7 +10,7 @@ public class Chess {
 
     //board dimensions
     private static final int BOARD_SIZE_IN_SQUARES = 8;
-    private static final int SQUARE_SIZE_IN_PADDED_CHARS = 2;
+    private static final int SQUARE_SIZE_IN_PADDED_CHARS = 3;
 
 
     public static void main(String[] args) {
@@ -37,9 +37,11 @@ public class Chess {
 
     private static void drawHeaders(PrintStream out, String[] headers){
         out.print(SET_BG_COLOR_DARK_GREY);
-
+        out.print(" ");
         for (int boardCol = 0; boardCol < BOARD_SIZE_IN_SQUARES; ++boardCol){
+            out.print(EMPTY);
             out.print(headers[boardCol]);
+            out.print(EMPTY);
 
 
         }
@@ -54,10 +56,10 @@ public class Chess {
         for (int squareRow = 0; squareRow < SQUARE_SIZE_IN_PADDED_CHARS; ++squareRow) {
 
             for (int boardCol = 0; boardCol < BOARD_SIZE_IN_SQUARES; ++boardCol) {
-                if(squareRow == 0 && boardCol == 0){
+                if(squareRow == 1 && boardCol == 0){
                     out.print(row);
                 }
-                if(squareRow == 1 && boardCol == 0){
+                if((squareRow == 0 && boardCol == 0) || (squareRow == 2 && boardCol == 0) ){
                     out.print(SET_TEXT_COLOR_DARK_GREY);
                     out.print(boardCol+1);
                 }
@@ -70,7 +72,7 @@ public class Chess {
             }
             out.print(SET_TEXT_COLOR_WHITE);
             out.print(SET_BG_COLOR_DARK_GREY);
-            if(squareRow == 0){
+            if(squareRow == 1){
                 out.print(row);
             }
             out.println();
@@ -99,7 +101,7 @@ public class Chess {
 //    }
 
     private static void drawBlackChessBoard(PrintStream out) {
-        String[] headers = {"    a     ", "b     ", "c     ", "d     ", "e     ", "f     ", "g     ", "h     "};
+        String[] headers = {"    a     ", " b     ", " c     ", " d     ", " e     ", " f     ", " g     ", " h     "};
         drawHeaders(out, headers);
         for (int boardRow = 0; boardRow < BOARD_SIZE_IN_SQUARES; ++boardRow) {
             int answer = (boardRow % 2 );
@@ -114,7 +116,7 @@ public class Chess {
     }
 
     private static void drawWhiteChessBoard(PrintStream out){
-        String[] headers = {"    h     ", "g     ", "f     ", "e     ", "d     ", "c     ", "b     ", "a     "};
+        String[] headers = {"    h     ", " g     ", " f     ", " e     ", " d     ", " c     ", " b     ", " a     "};
         drawHeaders(out, headers);
         int currentRow = 8;
         for (int boardRow = 0; boardRow < BOARD_SIZE_IN_SQUARES; ++boardRow) {
