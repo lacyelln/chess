@@ -3,11 +3,10 @@ package ui;
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Objects;
-import java.util.Random;
 
 import static ui.EscapeSequences.*;
 
-public class Chess {
+public class ChessBoard {
 
     //board dimensions
     private static final int BOARD_SIZE_IN_SQUARES = 8;
