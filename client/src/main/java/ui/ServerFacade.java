@@ -17,9 +17,10 @@ public class ServerFacade {
     }
 
 
-    public void register(UserData user) throws ResponseException {
+    public AuthData register(UserData user) throws ResponseException {
         var path = "/user";
-        this.makeRequest("POST", path, user, AuthData.class);
+        AuthData auth = this.makeRequest("POST", path, user, AuthData.class);
+        return auth;
     }
 
     public void login(UserData user) throws ResponseException {
@@ -27,8 +28,9 @@ public class ServerFacade {
         this.makeRequest("POST", path, user, AuthData.class);
     }
 
-    public void deleteAllPets() throws ResponseException {
-        var path = "/pet";
+
+    public void deleteAll() throws ResponseException {
+        var path = "/db";
         this.makeRequest("DELETE", path, null, null);
     }
 
@@ -52,7 +54,7 @@ public class ServerFacade {
             throwIfNotSuccessful(http);
             return readBody(http, responseClass);
         } catch (Exception ex) {
-            throw new ResponseException();
+            throw new ResponseException(ex.getMessage());
         }
     }
 
@@ -70,7 +72,8 @@ public class ServerFacade {
     private void throwIfNotSuccessful(HttpURLConnection http) throws IOException, ResponseException {
         var status = http.getResponseCode();
         if (!isSuccessful(status)) {
-            throw new ResponseException();
+            //if(status == )
+            throw new ResponseException("server error");
         }
     }
 

@@ -34,10 +34,8 @@ public class ChessClient {
                 case "quit" -> "quit";
                 default -> help();
             };
-        } catch (DataFormatException ex) {
+        } catch (DataFormatException | ResponseException ex) {
             return ex.getMessage();
-        } catch (ResponseException e) {
-            throw new RuntimeException(e);
         }
     }
 
@@ -61,7 +59,7 @@ public class ChessClient {
             return String.format("You are signed in as %s", user.username());
 
         }
-        throw new DataFormatException();
+        throw new DataFormatException("Formatting error");
     }
 
     public String createGame(String... params) throws DataFormatException{
