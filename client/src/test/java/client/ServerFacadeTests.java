@@ -26,4 +26,9 @@ public class ServerFacadeTests {
         Assertions.assertTrue(true);
     }
 
+    @Test
+    public void register(){
+        server.register(req.body())
+    }
+
 }

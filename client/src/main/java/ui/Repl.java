@@ -13,20 +13,23 @@ public class Repl {
     }
 
     public void run() {
-        System.out.println("\uD83D\uDC36 Let's play chess. Sign in to start.");
-        System.out.print(client.help());
+        System.out.println(SET_TEXT_COLOR_WHITE + "Let's play chess. Sign in to start.");
+        System.out.print(SET_TEXT_COLOR_BLUE+ client.help());
 
         Scanner scanner = new Scanner(System.in);
         var result = "";
         while (!result.equals("quit")) {
+            System.out.print(SET_TEXT_COLOR_WHITE);
             printPrompt();
             String line = scanner.nextLine();
-
+            if(line.equals("help")){
+                System.out.print(SET_TEXT_COLOR_BLUE);
+            }
             try {
                 result = client.eval(line);
-                System.out.print(BLUE + result);
-            } catch (Throwable e) {
-                var msg = e.toString();
+                System.out.print(result);
+            } catch (Exception e) {
+                var msg = e.getMessage();
                 System.out.print(msg);
             }
         }
@@ -35,7 +38,7 @@ public class Repl {
 
 
     private void printPrompt() {
-        System.out.print("\n"  + ">>> " + GREEN);
+        System.out.print("\n" + client.getCurrentState()  + " >>> " + SET_TEXT_COLOR_WHITE);
     }
 
 }

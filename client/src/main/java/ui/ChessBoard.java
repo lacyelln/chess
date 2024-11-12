@@ -18,17 +18,12 @@ public class ChessBoard {
 
         out.print(ERASE_SCREEN);
 
-
         drawBlackChessBoard(out);
 
         out.println();
         out.println();
 
         drawWhiteChessBoard(out);
-
-
-
-
 
     }
 

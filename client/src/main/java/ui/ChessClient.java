@@ -1,16 +1,24 @@
 package ui;
 
 
+import model.UserData;
+import static ui.EscapeSequences.*;
+
 import java.util.Arrays;
 import java.util.zip.DataFormatException;
 
 public class ChessClient {
     private final String serverUrl;
     private State state = State.SIGNEDOUT;
+    private ServerFacade server;
 
     public ChessClient(String serverUrl) {
-        //server = new ServerFacade(serverUrl);
+        this.server = new ServerFacade(serverUrl);
         this.serverUrl = serverUrl;
+    }
+
+    public Enum<State> getCurrentState(){
+        return state;
     }
 
     public String eval(String input) {
@@ -28,26 +36,41 @@ public class ChessClient {
             };
         } catch (DataFormatException ex) {
             return ex.getMessage();
+        } catch (ResponseException e) {
+            throw new RuntimeException(e);
         }
     }
 
-    public String register(String... params) throws DataFormatException {
-        System.out.print("Registering");
-        return null;
+    public String register(String... params) throws DataFormatException, ResponseException {
+        System.out.println("Registering ...");
+        if (params.length == 3) {
+            UserData user = new UserData(params[0], params[1], params[2]);
+            server.register(user);
+            state = State.SIGNEDIN;
+            return String.format("You signed in as %s.", user.username());
+        }
+        throw new DataFormatException();
+
     }
 
-    public String login(String ... params) throws DataFormatException {
-        System.out.print("logging in");
-        return null;
+    public String login(String ... params) throws DataFormatException, ResponseException {
+        if (params.length == 2){
+            UserData user = new UserData(params[0], params[1], null);
+            server.login(user);
+            state = State.SIGNEDIN;
+            return String.format("You are signed in as %s", user.username());
+
+        }
+        throw new DataFormatException();
     }
 
     public String createGame(String... params) throws DataFormatException{
-        System.out.print("creating game");
+        System.out.println("creating game");
         return null;
     }
 
     public String listGames(String... params) throws DataFormatException{
-      System.out.print("listing games");
+      System.out.println("listing games");
       return null;
     }
 
