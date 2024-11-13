@@ -1,5 +1,6 @@
 package server;
 
+import chess.GenericError;
 import com.google.gson.JsonParser;
 import model.GameData;
 import service.UserService;
@@ -57,7 +58,7 @@ public class Server {
             res.status(200);
         }
         catch (DataAccessException e){
-            Spark.halt(500, "{\"message\"Error: " + e.getMessage() + "\"})");
+            Spark.halt(500, serializer.toJson(new GenericError("Error: " + e.getMessage())));
         }
         catch (BadRequestException e){
             Spark.halt(400, serializer.toJson(new GenericError("Error: bad request")));
@@ -74,7 +75,7 @@ public class Server {
             userService.delete();
         }
         catch (DataAccessException e){
-            Spark.halt(500, "{\"message\": \"Error: " + e.getMessage() + "\"})");
+            Spark.halt(500, serializer.toJson(new GenericError("Error: " + e.getMessage())));
         }
         return serializer.toJson(new HashMap<>());
     }
@@ -89,7 +90,7 @@ public class Server {
             Spark.halt(401, serializer.toJson(new GenericError("Error: unauthorized")));
         }
         catch (DataAccessException e){
-            Spark.halt(500, "{\"message\": \"Error:\"" + e.getMessage() + "\"})");
+            Spark.halt(500, serializer.toJson(new GenericError("Error: " + e.getMessage())));
         }
         return serializer.toJson(authData);
     }
@@ -102,7 +103,7 @@ public class Server {
             Spark.halt(401, serializer.toJson(new GenericError("Error: unauthorized")));
         }
         catch (DataAccessException e){
-            Spark.halt(500, "{\"message\": \"Error:" + e.getMessage() + "\"}");
+            Spark.halt(500, serializer.toJson(new GenericError("Error: " + e.getMessage())));
         }
         return serializer.toJson(new HashMap<>());
     }
@@ -121,7 +122,7 @@ public class Server {
             Spark.halt(400, serializer.toJson(new GenericError("Error: bad request")));
         }
         catch (DataAccessException e) {
-            Spark.halt(500, "{\"message\": \"Error:\"" + e.getMessage() + "\"})");
+            Spark.halt(500, serializer.toJson(new GenericError("Error: " + e.getMessage())));
         }
         return serializer.toJson(gameID);
     }
@@ -131,20 +132,20 @@ public class Server {
         HashMap<String, Object> body = new Gson().fromJson(req.body(), HashMap.class);
         try{
             if(body.get("gameID") == null){
-                throw new BadRequestException();
+                throw new BadRequestException("No gameID found");
             }
             int gameID = ((Double)body.get("gameID")).intValue();
             if(body.get("playerColor") == null){
-                throw new BadRequestException();
+                throw new BadRequestException("No player color found");
             }
             String playerColor = (String)body.get("playerColor");
             if ((!playerColor.equals("WHITE") && !playerColor.equals("BLACK"))){
-                throw new BadRequestException();
+                throw new BadRequestException("player color is not white or black");
             }
             gameService.joinGame(authToken, gameID, playerColor);
         }
         catch(DataAccessException e){
-            Spark.halt(500, "{\"message\": \"Error:\"" + e.getMessage() + "\"})");
+            Spark.halt(500, serializer.toJson(new GenericError("Error: " + e.getMessage())));
         }
         catch(UnauthorizedException e){
             Spark.halt(401, serializer.toJson(new GenericError("Error: unauthorized")));
@@ -165,7 +166,7 @@ public class Server {
             listOfGames = gameService.listGames(authToken);
         }
         catch (DataAccessException e){
-            Spark.halt(500, "{\"message\": \"Error:\"" + e.getMessage() + "\"})");
+            Spark.halt(500, serializer.toJson(new GenericError("Error: " + e.getMessage())));
         }
         catch (UnauthorizedException e){
             Spark.halt(401, serializer.toJson(new GenericError("Error: unauthorized")));

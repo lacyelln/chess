@@ -15,7 +15,11 @@ public class ChessBoard {
 
     public static void main(String[] args) {
         var out = new PrintStream(System.out, true, StandardCharsets.UTF_8);
+        printBoard(out);
 
+    }
+
+    public static void printBoard(PrintStream out){
         out.print(ERASE_SCREEN);
 
         drawBlackChessBoard(out);
@@ -24,6 +28,11 @@ public class ChessBoard {
         out.println();
 
         drawWhiteChessBoard(out);
+
+        out.print(RESET_BG_COLOR);
+        out.print(RESET_TEXT_BOLD_FAINT);
+
+
 
     }
 
@@ -119,7 +128,7 @@ public class ChessBoard {
 
 
     private static void drawBlackChessBoard(PrintStream out) {
-        String[] headers = {"   h     ", " f     ", " g     ", " e     ", " d     ", " c     ", " b     ", " a     "};
+        String[] headers = {" h ", " f ", " g ", " e ", " d ", " c ", " b ", " a "};
         drawHeaders(out, headers);
 
         for (int boardRow = 0; boardRow < BOARD_SIZE_IN_SQUARES; ++boardRow) {
@@ -137,7 +146,7 @@ public class ChessBoard {
 
 
     private static void drawWhiteChessBoard(PrintStream out){
-        String[] headers = {"   a     ", " b     ", " c     ", " d     ", " e     ", " f     ", " g     ", " h     "};
+        String[] headers = {" a ", " b ", " c ", " d ", " e ", " f ", " g ", " h "};
         drawHeaders(out, headers);
         int currentRow = 8;
         for (int boardRow = 0; boardRow < BOARD_SIZE_IN_SQUARES; ++boardRow) {

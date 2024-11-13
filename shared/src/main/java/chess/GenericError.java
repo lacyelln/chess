@@ -1,4 +1,4 @@
-package server;
+package chess;
 
 public class GenericError{
 
@@ -8,5 +8,7 @@ public class GenericError{
         this.message = message;
     }
 
-
+    public String getMessage(){
+        return this.message;
+    }
 }
