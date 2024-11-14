@@ -92,8 +92,8 @@ public class ServerFacadeTests {
     public void listGamesFail(){
         Assertions.assertDoesNotThrow(() -> serverFacade.register(user));
         AuthData auth = Assertions.assertDoesNotThrow(() -> serverFacade.login(user));
-        Assertions.assertDoesNotThrow(() -> serverFacade.createGame(auth,"firstGame"));
-        Assertions.assertDoesNotThrow(()-> serverFacade.createGame(auth,"secondGame"));
+        Assertions.assertDoesNotThrow(() -> serverFacade.createGame(auth,"firstGaming"));
+        Assertions.assertDoesNotThrow(()-> serverFacade.createGame(auth,"secondGaming"));
         Assertions.assertThrows(ResponseException.class, () ->serverFacade.listGames(new AuthData("not-a-real-auth", "username")));
     }
 

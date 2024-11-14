@@ -7,6 +7,7 @@ import model.UserData;
 import static ui.EscapeSequences.*;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.zip.DataFormatException;
 
@@ -15,11 +16,13 @@ public class ChessClient {
     private State state = State.SIGNEDOUT;
     private ServerFacade server;
     private AuthData auth;
+    private HashMap<Integer, Integer> numberToId;
 
     public ChessClient(String serverUrl) {
         this.server = new ServerFacade(serverUrl);
         this.serverUrl = serverUrl;
         this.auth = null;
+        this.numberToId = new HashMap<>();
     }
 
     public Enum<State> getCurrentState(){
@@ -80,7 +83,7 @@ public class ChessClient {
         try {
             if (params.length == 1) {
                 int gameID = server.createGame(this.auth, params[0]);
-                return String.format("You have created game '%s' with gameID %d", params[0], gameID);
+                return String.format("You have created game '%s'.", params[0]);
             }
             return String.format("Please name your game one word.");
         } catch (ResponseException e){
@@ -92,29 +95,52 @@ public class ChessClient {
       try{
           GameData[] games = server.listGames(this.auth);
           List<GameData> gameList = Arrays.stream(games).toList();
+          if (gameList.isEmpty()){
+              return "You have not created any games.";
+          }
           System.out.println("Here are the games you have created:");
           for (int i = 0; i < games.length; i++){
-              System.out.print(String.format("- %s, %d\n", gameList.get(i).gameName(), gameList.get(i).gameID()));
+              numberToId.put(i+1, gameList.get(i).gameID());
+              String white = gameList.get(i).whiteUsername();
+              if (white == null){
+                  white = "None";
+              }
+              String black = gameList.get(i).blackUsername();
+              if (black == null){
+                  black = "None";
+              }
+
+              System.out.print(String.format("%d) %s with players: white(%s) and black(%s).\n", i+1,
+                      gameList.get(i).gameName(), white , black));
           }
-          return "Would you like to create a new game?";
+          return "What would you like to do with your games?";
       } catch (ResponseException e){
           throw new ResponseException("Error grabbing games");
       }
     }
 
-    public String joinGame(String ... params) throws ResponseException{
+    public String joinGame(String ... params) throws NumberFormatException, ResponseException{
         System.out.println("joining game...");
+        int gameNumber = 0;
         try {
             if (params.length == 2) {
-                int gameID = Integer.parseInt(params[0]);
-                server.joinGame(this.auth, gameID, params[1]);
-                ChessBoard.main(params);
-                return String.format("You have successfully joined game %d as a %s player.", gameID, params[1]);
+                try {
+                    gameNumber = Integer.parseInt(params[0]);
+                } catch (NumberFormatException e) {
+                    return "Please select a number from the list of games.";
+                }
+                if (numberToId.containsKey(gameNumber)) {
+                    int gameID = numberToId.get(gameNumber);
+                    server.joinGame(this.auth, gameID, params[1]);
+                    ChessBoard.main(params);
+                    return String.format("You have successfully joined game %d as a %s player.", gameID, params[1]);
+                }
+                return "Please select a valid game number";
             }
             return String.format("Incorrect number of parameters, please provide a gameID and a team color.");
         } catch (ResponseException e){
             if (e.getMessage().contains("bad request")){
-                 return "Try a different game.";
+                 return "Please try again with a valid game number and a valid team color (white/black).";
             } else if (e.getMessage().contains("already taken")) {
                 return "The player color you selected is already taken.";
             } else {
@@ -126,9 +152,18 @@ public class ChessClient {
     }
 
     public String observeGame(String ... params) throws ResponseException{
+        int gameNumber;
         if(params.length == 1){
-            ChessBoard.main(params);
-            return String.format("You are observing the chess game of %s", params[0]);
+            try {
+                gameNumber = Integer.parseInt(params[0]);
+            } catch (NumberFormatException e) {
+                return "Please select a number from the list of games.";
+            }
+            if (numberToId.containsKey(gameNumber)) {
+                ChessBoard.main(params);
+                return String.format("You are observing the chess game of %s", params[0]);
+            }
+            return "Please provide a valid existing game from your game list.";
         }
         return "Error";
     }
@@ -159,7 +194,7 @@ public class ChessClient {
         return """
                     create <NAME> - a game
                     list - games
-                    join <ID> [WHITE][BLACK] - a game
+                    join <list number> [WHITE]/[BLACK] - a game
                     observed <ID> - a game
                     logout - when you are done
                     quit - playing chess
