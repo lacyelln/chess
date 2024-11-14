@@ -126,4 +126,10 @@ public class ServerFacadeTests {
     public void logoutFail(){
         Assertions.assertThrows(ResponseException.class, () -> serverFacade.logout(new AuthData("not an auth", "no user")));
     }
+
+    @Test
+    public void observeSuccess(){}
+
+    @Test
+    public void observeFail(){}
 }
