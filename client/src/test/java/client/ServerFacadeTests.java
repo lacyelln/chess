@@ -114,4 +114,15 @@ public class ServerFacadeTests {
         Assertions.assertThrows(ResponseException.class, () -> serverFacade.joinGame(auth, 23, "WHITE"));
         Assertions.assertThrows(ResponseException.class, () -> serverFacade.joinGame(new AuthData("auth", user.username()), gameID, "WHITE"));
     }
+
+    @Test
+    public void logoutSuccess(){
+
+    }
+
+
+    @Test
+    public void logoutFail(){
+
+    }
 }

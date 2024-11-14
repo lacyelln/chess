@@ -117,7 +117,7 @@ public class ChessClient {
                  return "Try a different game.";
             } else if (e.getMessage().contains("already taken")) {
                 return "The player color you selected is already taken.";
-            } else if (e.getMessage().contains("unauthorized")); {
+            } else {
                 return "You are not authorized to join this game.";
             }
 
