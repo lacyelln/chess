@@ -17,12 +17,14 @@ public class ChessClient {
     private ServerFacade server;
     private AuthData auth;
     private HashMap<Integer, Integer> numberToId;
+    private int i;
 
     public ChessClient(String serverUrl) {
         this.server = new ServerFacade(serverUrl);
         this.serverUrl = serverUrl;
         this.auth = null;
         this.numberToId = new HashMap<>();
+        this.i = 0;
     }
 
     public Enum<State> getCurrentState(){
@@ -82,9 +84,13 @@ public class ChessClient {
     public String createGame(String... params) throws ResponseException {
         try {
             if (params.length == 1) {
+                this.i++;
                 int gameID = server.createGame(this.auth, params[0]);
+                numberToId.put(this.i, gameID);
                 return String.format("You have created game '%s'.", params[0]);
+
             }
+
             return String.format("Please name your game one word.");
         } catch (ResponseException e){
             throw new ResponseException("Error creating game, create a game with an unused game name that is one word.");
@@ -100,7 +106,6 @@ public class ChessClient {
           }
           System.out.println("Here are the games you have created:");
           for (int i = 0; i < games.length; i++){
-              numberToId.put(i+1, gameList.get(i).gameID());
               String white = gameList.get(i).whiteUsername();
               if (white == null){
                   white = "None";
