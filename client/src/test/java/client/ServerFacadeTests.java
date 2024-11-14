@@ -117,12 +117,13 @@ public class ServerFacadeTests {
 
     @Test
     public void logoutSuccess(){
-
+        Assertions.assertDoesNotThrow(() -> serverFacade.register(user));
+        AuthData auth = Assertions.assertDoesNotThrow(() -> serverFacade.login(user));
+        Assertions.assertDoesNotThrow(() -> serverFacade.logout(auth));
     }
-
 
     @Test
     public void logoutFail(){
-
+        Assertions.assertThrows(ResponseException.class, () -> serverFacade.logout(new AuthData("not an auth", "no user")));
     }
 }
