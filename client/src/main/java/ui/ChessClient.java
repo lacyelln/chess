@@ -84,13 +84,15 @@ public class ChessClient {
     public String createGame(String... params) throws ResponseException {
         try {
             if (params.length == 1) {
-                this.i++;
-                int gameID = server.createGame(this.auth, params[0]);
-                numberToId.put(this.i, gameID);
-                return String.format("You have created game '%s'.", params[0]);
+                if (state == State.SIGNEDIN) {
+                    this.i++;
+                    int gameID = server.createGame(this.auth, params[0]);
+                    numberToId.put(this.i, gameID);
+                    return String.format("You have created game '%s'.", params[0]);
+                }
+                return "You need to be logged in to create a game";
 
             }
-
             return String.format("Please name your game one word.");
         } catch (ResponseException e){
             throw new ResponseException("Error creating game, create a game with an unused game name that is one word.");
@@ -99,26 +101,29 @@ public class ChessClient {
 
     public String listGames() throws ResponseException {
       try{
-          GameData[] games = server.listGames(this.auth);
-          List<GameData> gameList = Arrays.stream(games).toList();
-          if (gameList.isEmpty()){
-              return "You have not created any games.";
-          }
-          System.out.println("Here are the games you have created:");
-          for (int i = 0; i < games.length; i++){
-              String white = gameList.get(i).whiteUsername();
-              if (white == null){
-                  white = "None";
+          if (state == State.SIGNEDIN) {
+              GameData[] games = server.listGames(this.auth);
+              List<GameData> gameList = Arrays.stream(games).toList();
+              if (gameList.isEmpty()) {
+                  return "You have not created any games.";
               }
-              String black = gameList.get(i).blackUsername();
-              if (black == null){
-                  black = "None";
-              }
+              System.out.println("Here are the games you have created:");
+              for (int i = 0; i < games.length; i++) {
+                  String white = gameList.get(i).whiteUsername();
+                  if (white == null) {
+                      white = "None";
+                  }
+                  String black = gameList.get(i).blackUsername();
+                  if (black == null) {
+                      black = "None";
+                  }
 
-              System.out.print(String.format("%d) %s with players: white(%s) and black(%s).\n", i+1,
-                      gameList.get(i).gameName(), white , black));
+                  System.out.print(String.format("%d) %s with players: white(%s) and black(%s).\n", i + 1,
+                          gameList.get(i).gameName(), white, black));
+              }
+              return "What would you like to do with your games?";
           }
-          return "What would you like to do with your games?";
+          return "You need to be logged in to list games";
       } catch (ResponseException e){
           throw new ResponseException("Error grabbing games");
       }
@@ -128,21 +133,26 @@ public class ChessClient {
         System.out.println("joining game...");
         int gameNumber = 0;
         try {
-            if (params.length == 2) {
-                try {
-                    gameNumber = Integer.parseInt(params[0]);
-                } catch (NumberFormatException e) {
-                    return "Please select a number from the list of games.";
+            if (state == State.SIGNEDIN) {
+                if (params.length == 2) {
+                    try {
+                        gameNumber = Integer.parseInt(params[0]);
+                    } catch (NumberFormatException e) {
+                        return "Please select a number from the list of games.";
+                    }
+                    if (numberToId.containsKey(gameNumber)) {
+                        int gameID = numberToId.get(gameNumber);
+                        server.joinGame(this.auth, gameID, params[1]);
+                        ChessBoard.main(params);
+                        return String.format("You have successfully joined game %d as a %s player.", gameNumber, params[1]);
+                    }
+                    return "Please select a valid game number";
                 }
-                if (numberToId.containsKey(gameNumber)) {
-                    int gameID = numberToId.get(gameNumber);
-                    server.joinGame(this.auth, gameID, params[1]);
-                    ChessBoard.main(params);
-                    return String.format("You have successfully joined game %d as a %s player.", gameID, params[1]);
-                }
-                return "Please select a valid game number";
+                return String.format("Incorrect number of parameters, please provide a gameID and a team color.");
             }
-            return String.format("Incorrect number of parameters, please provide a gameID and a team color.");
+            return "You need to be logged in to join a game";
+
+
         } catch (ResponseException e){
             if (e.getMessage().contains("bad request")){
                  return "Please try again with a valid game number and a valid team color (white/black).";
@@ -158,19 +168,21 @@ public class ChessClient {
 
     public String observeGame(String ... params) throws ResponseException{
         int gameNumber;
-        if(params.length == 1){
-            try {
-                gameNumber = Integer.parseInt(params[0]);
-            } catch (NumberFormatException e) {
-                return "Please select a number from the list of games.";
+        if (state == State.SIGNEDIN) {
+            if (params.length == 1) {
+                try {
+                    gameNumber = Integer.parseInt(params[0]);
+                } catch (NumberFormatException e) {
+                    return "Please select a number from the list of games.";
+                }
+                if (numberToId.containsKey(gameNumber)) {
+                    ChessBoard.main(params);
+                    return String.format("You are observing the chess game of %s", params[0]);
+                }
+                return "Please provide a valid existing game from your game list.";
             }
-            if (numberToId.containsKey(gameNumber)) {
-                ChessBoard.main(params);
-                return String.format("You are observing the chess game of %s", params[0]);
-            }
-            return "Please provide a valid existing game from your game list.";
         }
-        return "Error";
+        return "You must be logged in to observe a game";
     }
 
     public String logout() throws ResponseException {
