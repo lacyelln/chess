@@ -27,12 +27,22 @@ public class ChessPiece {
      * The various different chess piece options
      */
     public enum PieceType {
-        KING,
-        QUEEN,
-        BISHOP,
-        KNIGHT,
-        ROOK,
-        PAWN
+        KING(" K "),
+        QUEEN(" Q "),
+        BISHOP(" B "),
+        KNIGHT(" N "),
+        ROOK(" R "),
+        PAWN(" P ");
+
+        private final String symbol;
+
+        PieceType(String symbol) {
+            this.symbol = symbol;
+        }
+
+        public String getSymbol() {
+            return symbol;
+        }
     }
 
     /**
