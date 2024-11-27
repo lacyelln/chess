@@ -1,23 +1,21 @@
 package ui;
 
-import chess.ChessBoard;
 import chess.ChessGame;
 import chess.ChessPiece;
 import chess.ChessPosition;
 
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
+import java.util.Objects;
 
 import static ui.EscapeSequences.*;
 
-
-
-public class Board {
+public class ChessBoard {
 
     //board dimensions
     private static final int BOARD_SIZE_IN_SQUARES = 8;
     private static final int SQUARE_SIZE_IN_PADDED_CHARS = 1;
-    static ChessBoard board = new ChessBoard();
+    static chess.ChessBoard gameBoard = new chess.ChessBoard();
 
 
     public static void main(String[] args) {
@@ -30,23 +28,19 @@ public class Board {
         out.print(ERASE_SCREEN);
         out.print(SET_BG_COLOR_DARK_GREY);
         out.print(SET_TEXT_COLOR_WHITE);
-        out.println("Black perspective: (black is blue): ");
+
+        out.println("black perspective");
+
         drawBlackChessBoard(out);
+
         out.println();
         out.println();
 
-        out.println("White perspective (white is red):");
+        out.println("white perspective");
         drawWhiteChessBoard(out);
-
-
-
-
 
         out.print(RESET_BG_COLOR);
         out.print(RESET_TEXT_BOLD_FAINT);
-
-
-
     }
 
     private static void drawHeaders(PrintStream out, String[] headers){
@@ -61,7 +55,7 @@ public class Board {
 
     }
 
-    private static void drawRowOfSquares(PrintStream out, boolean isEvenRow, int row) {
+    private static void drawRowOfSquares(PrintStream out, boolean isEvenRow, int row, String board) {
         out.print(SET_TEXT_COLOR_WHITE);
         out.print(SET_BG_COLOR_DARK_GREY);
         out.print(row);
@@ -71,7 +65,12 @@ public class Board {
             } else {
                 setBlack(out);
             }
-            addPieceToBoard(out, boardCol, row);
+            if (row < 3 || row > 6){
+                addPieceToBoard(out, boardCol, row);
+            }
+            else {
+                out.print(EMPTY.repeat(SQUARE_SIZE_IN_PADDED_CHARS));
+            }
         }
         out.print(SET_TEXT_COLOR_WHITE);
         out.print(SET_BG_COLOR_DARK_GREY);
@@ -93,36 +92,26 @@ public class Board {
 
     private static void addPieceToBoard(PrintStream out, int boardCol, int row){
         out.print(SET_TEXT_BOLD);
-        ChessPiece piece = ChessBoard.getPiece(new ChessPosition(row, boardCol+1));
-        if (piece != null) {
+        ChessPiece piece = gameBoard.getPiece(new ChessPosition(row, boardCol+1));
+        out.print(SET_TEXT_COLOR_RED);
+        if (piece.getTeamColor() == ChessGame.TeamColor.WHITE) {
             out.print(SET_TEXT_COLOR_BLUE);
-            if (piece.getTeamColor() == ChessGame.TeamColor.WHITE) {
-                out.print(SET_TEXT_COLOR_RED);
-            }
-            out.print(piece.getPieceType().getSymbol());
         }
-        else{
-            out.print(EMPTY.repeat(SQUARE_SIZE_IN_PADDED_CHARS));
-        }
+        out.print(piece.getPieceType().getSymbol());
+
+
     }
-
-
 
 
     private static void drawBlackChessBoard(PrintStream out) {
         String[] headers = {" h ", " f ", " g ", " e ", " d ", " c ", " b ", " a "};
         drawHeaders(out, headers);
-
+        gameBoard.resetBoard();
+        gameBoard.changeBoard();
         for (int boardRow = 0; boardRow < BOARD_SIZE_IN_SQUARES; ++boardRow) {
             int answer = (boardRow % 2 );
             boolean isEven = answer != 1;
-            board.resetBoard();
-            board.addPiece(new ChessPosition(8, 5), new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.QUEEN));
-            board.addPiece(new ChessPosition(8, 4), new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.KING));
-            board.addPiece(new ChessPosition(1, 5), new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.QUEEN));
-            board.addPiece(new ChessPosition(1, 4), new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.KING));
-
-            drawRowOfSquares(out, isEven, boardRow+1);
+            drawRowOfSquares(out, isEven, boardRow+1, "black");
             if (boardRow < BOARD_SIZE_IN_SQUARES - 1) {
                 setBlack(out);
             }
@@ -136,12 +125,12 @@ public class Board {
     private static void drawWhiteChessBoard(PrintStream out){
         String[] headers = {" a ", " b ", " c ", " d ", " e ", " f ", " g ", " h "};
         drawHeaders(out, headers);
+        gameBoard.resetBoard();
         int currentRow = 8;
         for (int boardRow = 0; boardRow < BOARD_SIZE_IN_SQUARES; ++boardRow) {
             int answer = (boardRow % 2 );
             boolean isEven = answer != 1;
-            board.resetBoard();
-            drawRowOfSquares(out, isEven, currentRow);
+            drawRowOfSquares(out, isEven, currentRow, "white");
             if (boardRow < BOARD_SIZE_IN_SQUARES - 1) {
                 setBlack(out);
             }

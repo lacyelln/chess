@@ -27,6 +27,7 @@ public class ChessPiece {
      * The various different chess piece options
      */
     public enum PieceType {
+
         KING(" K "),
         QUEEN(" Q "),
         BISHOP(" B "),
@@ -36,10 +37,12 @@ public class ChessPiece {
 
         private final String symbol;
 
+        // Constructor
         PieceType(String symbol) {
             this.symbol = symbol;
         }
 
+        // Getter for the associated symbol
         public String getSymbol() {
             return symbol;
         }

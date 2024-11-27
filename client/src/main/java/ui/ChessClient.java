@@ -9,6 +9,7 @@ import static ui.EscapeSequences.*;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.zip.DataFormatException;
 
 public class ChessClient {
     private final String serverUrl;
@@ -142,7 +143,7 @@ public class ChessClient {
                     if (numberToId.containsKey(gameNumber)) {
                         int gameID = numberToId.get(gameNumber);
                         server.joinGame(this.auth, gameID, params[1]);
-                        Board.main(params);
+                        ChessBoard.main(params);
                         return String.format("You have successfully joined game %d as a %s player.", gameNumber, params[1]);
                     }
                     return "Please select a valid game number";
@@ -175,7 +176,7 @@ public class ChessClient {
                     return "Please select a number from the list of games.";
                 }
                 if (numberToId.containsKey(gameNumber)) {
-                    Board.main(params);
+                    ChessBoard.main(params);
                     return String.format("You are observing the chess game of %s", params[0]);
                 }
                 return "Please provide a valid existing game from your game list.";
