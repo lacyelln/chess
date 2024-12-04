@@ -16,28 +16,41 @@ public class ChessBoard {
     private static final int BOARD_SIZE_IN_SQUARES = 8;
     private static final int SQUARE_SIZE_IN_PADDED_CHARS = 1;
     static chess.ChessBoard gameBoard = new chess.ChessBoard();
+    static String observer = "WHITE";
 
 
     public static void main(String[] args) {
         var out = new PrintStream(System.out, true, StandardCharsets.UTF_8);
-        printBoard(out);
+        printBoard(out, observer);
 
     }
 
-    public static void printBoard(PrintStream out){
+    public static void printBoard(PrintStream out, String observer){
         out.print(ERASE_SCREEN);
         out.print(SET_BG_COLOR_DARK_GREY);
         out.print(SET_TEXT_COLOR_WHITE);
 
-        out.println("black perspective");
+        if (Objects.equals(observer, "WHITE")){
+            out.println("white perspective");
+            drawWhiteChessBoard(out);
+            out.println();
+            out.println();
+            out.println("black perspective");
+            drawBlackChessBoard(out);
+        }
+        else{
+            out.println("black perspective");
+            drawBlackChessBoard(out);
+            out.println();
+            out.println();
+            out.println("white perspective");
+            drawWhiteChessBoard(out);
+        }
 
-        drawBlackChessBoard(out);
 
-        out.println();
-        out.println();
 
-        out.println("white perspective");
-        drawWhiteChessBoard(out);
+
+
 
         out.print(RESET_BG_COLOR);
         out.print(RESET_TEXT_BOLD_FAINT);
