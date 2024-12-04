@@ -46,12 +46,6 @@ public class ChessBoard {
             out.println("white perspective");
             drawWhiteChessBoard(out);
         }
-
-
-
-
-
-
         out.print(RESET_BG_COLOR);
         out.print(RESET_TEXT_BOLD_FAINT);
     }
@@ -65,7 +59,6 @@ public class ChessBoard {
             out.print(headers[boardCol]);
         }
         out.println();
-
     }
 
     private static void drawRowOfSquares(PrintStream out, boolean isEvenRow, int row, String board) {
@@ -111,10 +104,7 @@ public class ChessBoard {
             out.print(SET_TEXT_COLOR_BLUE);
         }
         out.print(piece.getPieceType().getSymbol());
-
-
     }
-
 
     private static void drawBlackChessBoard(PrintStream out) {
         String[] headers = {" h ", " f ", " g ", " e ", " d ", " c ", " b ", " a "};
@@ -130,10 +120,7 @@ public class ChessBoard {
             }
         }
         drawHeaders(out, headers);
-
-
     }
-
 
     private static void drawWhiteChessBoard(PrintStream out){
         String[] headers = {" a ", " b ", " c ", " d ", " e ", " f ", " g ", " h "};
@@ -151,7 +138,5 @@ public class ChessBoard {
         }
         drawHeaders(out, headers);
     }
-
-
 
 }
